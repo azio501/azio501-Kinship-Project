@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries v52 Snowball</title>
+    <title>KOC | Aries v53 The Blaster</title>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
         #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-size: 14px; letter-spacing: 2px; z-index: 100; font-weight: bold; }
@@ -11,120 +11,138 @@
             position: fixed; color: #ff2200; font-weight: 900; white-space: nowrap;
             text-shadow: 0 0 15px #ff0000; font-size: 24px; z-index: 50;
             cursor: pointer; user-select: none; will-change: transform;
-            pointer-events: auto; opacity: 0.8; padding: 12px;
         }
 
+        /* THE PAYOFF ELEMENTS (Hidden at start) */
+        #starfield { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; opacity: 0; }
+        
         #orb {
             position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.9);
+            transform: translate(-50%, -50%) scale(0);
             width: 450px; height: 450px; border-radius: 50%;
-            background: rgba(5, 5, 5, 0.98);
-            box-shadow: 
-                inset 10px 10px 50px rgba(255,255,255,0.05),
-                inset -20px -20px 80px rgba(0,0,0,1),
-                0 0 30px rgba(255,69,0,0.05);
-            opacity: 0.15; display: flex; align-items: center; justify-content: center;
-            transition: all 0.5s ease; z-index: 5;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, rgba(255,160,0,0.1) 40%, #000 100%);
+            box-shadow: inset 10px 10px 50px rgba(255,255,255,0.1), 0 0 100px rgba(255,100,0,0.3);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 60;
         }
+
+        /* The Internal "Galaxy" Symbol */
+        #symbol { color: #ffaa00; font-size: 120px; filter: drop-shadow(0 0 20px #ff4500); opacity: 0.8; }
 
         #zodiac-name {
             position: fixed; bottom: 50px; width: 100%; text-align: center;
             color: #ffaa00; font-size: 44px; letter-spacing: 70px; text-indent: 70px;
-            opacity: 0; font-weight: bold; transition: opacity 8s ease; z-index: 10;
+            opacity: 0; font-weight: bold; transition: opacity 4s; z-index: 70;
         }
     </style>
 </head>
 <body>
 
-    <div id="counter">BUREAUCRACY_EXPUNGED: 0/50</div>
-    <div id="orb"></div>
+    <div id="counter">BUREAUCRACY_EXPUNGED: 0/30</div>
+    <div id="starfield"></div>
+    <div id="orb"><div id="symbol">♈</div></div>
     <div id="zodiac-name">ARIES</div>
 
     <script>
         let zapCount = 0;
         let ritualComplete = false;
-        const targetGoal = 50; 
-        const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "REFERRALS", "FRONT DESK", "PRIOR AUTH", "bedpan", "BARIUM DRINK", "CO-AUTH", "ELEVATOR MUSIC", "FORMS", "RE-FILL", "DEDUCTIBLE", "PRE-EXISTING", "OUT-OF-NETWORK", "LAB WORK"];
+        const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "REFERRALS", "FRONT DESK", "PRIOR AUTH", "FORMS", "RE-FILL", "DEDUCTIBLE"];
         let activeWords = [];
 
-        function spawn() {
+        function spawn(xPos, yPos) {
             if(ritualComplete) return;
             const w = document.createElement('div');
             w.className = 'word';
             w.innerText = wordList[Math.floor(Math.random() * wordList.length)];
             
-            // Random start positions
-            let x = Math.random() * 100;
-            let y = Math.random() * 100;
+            // If no xPos provided, spawn from edges
+            let x = xPos !== undefined ? xPos : (Math.random() > 0.5 ? -10 : 110);
+            let y = yPos !== undefined ? yPos : Math.random() * 100;
             
-            // Speed scales slightly with zapCount but stays low
-            let currentSpeed = 0.15 + (zapCount * 0.005);
-            let dx = (Math.random() - 0.5) * currentSpeed;
-            let dy = (Math.random() - 0.5) * currentSpeed;
+            let dx = (Math.random() - 0.5) * 1.5;
+            let dy = (Math.random() - 0.5) * 1.5;
             
-            w.style.left = x + 'vw';
-            w.style.top = y + 'vh';
+            w.style.left = x + 'vw'; w.style.top = y + 'vh';
             document.body.appendChild(w);
-
             const wordObj = { el: w, x, y, dx, dy };
             
             w.onmouseover = () => {
                 if(ritualComplete) return;
                 zapCount++;
-                document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${zapCount}/${targetGoal}`;
+                document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${zapCount}/30`;
                 
-                const orb = document.getElementById('orb');
-                const p = zapCount / targetGoal;
-                orb.style.opacity = 0.15 + (p * 0.85);
-                orb.style.boxShadow = `inset 10px 10px 50px rgba(255,255,255,${p*0.1}), 0 0 ${30 + (p * 100)}px rgba(255,69,0,${p*0.4})`;
-                
-                w.remove();
+                // EXPLOSION: Delete this one, spawn 3 more near it
+                w.style.transform = "scale(2)"; w.style.opacity = "0";
+                setTimeout(() => w.remove(), 100);
                 activeWords = activeWords.filter(item => item !== wordObj);
-                if(zapCount >= targetGoal) startBigBang();
+                
+                if(zapCount < 30) {
+                    for(let i=0; i<3; i++) spawn(wordObj.x, wordObj.y);
+                } else {
+                    startTheBlackHole();
+                }
             };
-
             activeWords.push(wordObj);
         }
 
-        // START THIN: Only 20 words
-        for(let i=0; i<20; i++) spawn();
+        // Start with 4 words
+        for(let i=0; i<4; i++) spawn();
 
         function update() {
             if(!ritualComplete) {
                 activeWords.forEach((obj) => {
-                    obj.x += obj.dx;
-                    obj.y += obj.dy;
-                    if(obj.x < -15) obj.x = 115;
-                    if(obj.x > 115) obj.x = -15;
-                    if(obj.y < -15) obj.y = 115;
-                    if(obj.y > 115) obj.y = -15;
-                    obj.el.style.left = obj.x + 'vw';
-                    obj.el.style.top = obj.y + 'vh';
+                    obj.x += obj.dx; obj.y += obj.dy;
+                    if(obj.x < -20) obj.x = 120; if(obj.x > 120) obj.x = -20;
+                    if(obj.y < -20) obj.y = 120; if(obj.y > 120) obj.y = -20;
+                    obj.el.style.left = obj.x + 'vw'; obj.el.style.top = obj.y + 'vh';
                 });
-
-                // THE REWARD: Target population grows as you zap
-                // Starts at 20, ends at 100+
-                let targetPopulation = 20 + (zapCount * 2);
-                if (activeWords.length < targetPopulation) spawn();
             }
             requestAnimationFrame(update);
         }
         update();
 
-        function startBigBang() {
+        function startTheBlackHole() {
             ritualComplete = true;
             document.getElementById('counter').style.display = 'none';
-            activeWords.forEach(obj => obj.el.remove());
-            activeWords = [];
+            // Suck all words to center and vanish
+            activeWords.forEach(obj => {
+                obj.el.style.transition = "all 1s ease-in";
+                obj.el.style.left = "50vw"; obj.el.style.top = "50vh";
+                obj.el.style.opacity = "0";
+            });
+            
+            // 3 SECONDS OF BLANK BLACK
+            setTimeout(() => {
+                activeWords.forEach(obj => obj.el.remove());
+                bigBangPayoff();
+            }, 3000);
+        }
 
+        function bigBangPayoff() {
+            // STARS & STRIPES (Simulated with CSS)
+            const sf = document.getElementById('starfield');
+            sf.style.opacity = "1";
+            for(let i=0; i<50; i++) {
+                const s = document.createElement('div');
+                s.style.position = 'absolute'; s.style.left = '50%'; s.style.top = '50%';
+                s.style.width = '2px'; s.style.height = '40px'; s.style.background = '#fff';
+                s.style.transform = `rotate(${Math.random() * 360}deg) translateY(0px)`;
+                s.style.transition = "all 1s ease-out";
+                sf.appendChild(s);
+                setTimeout(() => {
+                    s.style.transform = s.style.transform.replace('translateY(0px)', 'translateY(800px)');
+                    s.style.opacity = '0';
+                }, 10);
+            }
+
+            // REVEAL ORB
             const orb = document.getElementById('orb');
-            orb.style.opacity = '1';
-            orb.style.transform = 'translate(-50%, -50%) scale(1.1)';
-            orb.style.background = 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, rgba(255,160,0,0.1) 40%, #000 100%)';
+            orb.style.transform = 'translate(-50%, -50%) scale(1)';
             
             setTimeout(() => {
                 document.getElementById('zodiac-name').style.opacity = '1';
-            }, 1000);
+            }, 1500);
         }
     </script>
 </body>
