@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries Reset v34</title>
+    <title>KOC | Aries Reset v35</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
@@ -14,9 +14,9 @@
             display: flex; justify-content: center; pointer-events: none; z-index: 5; 
         }
         #zodiac-name { 
-            color: #ffaa00; font-size: 16px; letter-spacing: 40px; opacity: 0; 
+            color: #ffaa00; font-size: 18px; letter-spacing: 40px; opacity: 0; 
             transition: opacity 4s; text-shadow: 0 0 15px #ff4500;
-            text-align: center; margin-left: 40px; /* Counter-balance for letter-spacing */
+            text-align: center; margin-left: 40px; 
         }
     </style>
 </head>
@@ -35,60 +35,45 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Stars
         const starGeo = new THREE.BufferGeometry();
-        const starCount = 30000;
+        const starCount = 20000;
         const pos = new Float32Array(starCount * 3);
         const vel = new Float32Array(starCount * 3);
         for(let i=0; i<starCount; i++) {
-            pos[i*3] = (Math.random() - 0.5) * 15;
-            pos[i*3+1] = (Math.random() - 0.5) * 15;
-            pos[i*3+2] = (Math.random() - 0.5) * 15;
-            vel[i*3] = pos[i*3] * 45;
-            vel[i*3+1] = pos[i*3+1] * 45;
-            vel[i*3+2] = pos[i*3+2] * 45;
+            pos[i*3] = (Math.random() - 0.5) * 20;
+            pos[i*3+1] = (Math.random() - 0.5) * 20;
+            pos[i*3+2] = (Math.random() - 0.5) * 20;
+            vel[i*3] = pos[i*3] * 50;
+            vel[i*3+1] = pos[i*3+1] * 50;
+            vel[i*3+2] = pos[i*3+2] * 50;
         }
         starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.03, color: 0xffffff, transparent: true, opacity: 0 });
+        const starMat = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff, transparent: true, opacity: 0 });
         const starSystem = new THREE.Points(starGeo, starMat);
         scene.add(starSystem);
 
-        // --- THE ORB (Standard Material for Visibility) ---
+        // --- THE RECOVERY ORB ---
         const orbGroup = new THREE.Group();
         
-        // Main Body
-        const glassOrb = new THREE.Mesh(
-            new THREE.SphereGeometry(12, 64, 64),
-            new THREE.MeshStandardMaterial({
-                color: 0x222222, metalness: 0.9, roughness: 0.1,
-                transparent: true, opacity: 0
-            })
-        );
-        
-        // Outer Shine (The Highlight)
-        const shineLayer = new THREE.Mesh(
-            new THREE.SphereGeometry(12.1, 64, 64),
-            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, side: THREE.BackSide })
-        );
-
+        // Solid Glowing Core (To ensure visibility)
         const core = new THREE.Mesh(
-            new THREE.IcosahedronGeometry(7, 1),
-            new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true, transparent: true, opacity: 0 })
+            new THREE.SphereGeometry(10, 32, 32),
+            new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0 })
         );
         
-        orbGroup.add(glassOrb);
-        orbGroup.add(shineLayer);
+        // Wireframe Shell
+        const shell = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(10.5, 1),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0 })
+        );
+        
         orbGroup.add(core);
-        orbGroup.position.z = -300; 
+        orbGroup.add(shell);
+        orbGroup.position.z = -200; 
         orbGroup.scale.set(0.1, 0.1, 0.1);
         scene.add(orbGroup);
 
-        const light = new THREE.PointLight(0xffffff, 5, 1000);
-        light.position.set(50, 50, 100);
-        scene.add(light);
-        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-
-        camera.position.z = 60;
+        camera.position.z = 100;
 
         function createWord() {
             if(ritualComplete) return;
@@ -96,58 +81,39 @@
             word.className = 'floating-word';
             word.innerText = wordList[Math.floor(Math.random() * wordList.length)];
             const depth = Math.random();
-            word.style.fontSize = (14 + depth * 30) + "px";
-            const edge = Math.floor(Math.random() * 4);
-            let x, y, dx = 0, dy = 0;
-            const speed = 3.5 + Math.random() * 6;
-            if(edge === 0) { x = -600; y = Math.random() * window.innerHeight; dx = speed; } 
-            else if(edge === 1) { x = window.innerWidth + 600; y = Math.random() * window.innerHeight; dx = -speed; } 
-            else if(edge === 2) { x = Math.random() * window.innerWidth; y = -250; dy = speed; } 
-            else { x = Math.random() * window.innerWidth; y = window.innerHeight + 250; dy = -speed; } 
-            word.style.left = x + "px"; word.style.top = y + "px";
+            word.style.left = Math.random() * window.innerWidth + "px";
+            word.style.top = Math.random() * window.innerHeight + "px";
             document.body.appendChild(word);
-            activeWords.push({ element: word, x, y, dx, dy, sucking: false });
+            activeWords.push({ element: word, x: parseFloat(word.style.left), y: parseFloat(word.style.top), dx: (Math.random()-0.5)*10, dy: (Math.random()-0.5)*10, sucking: false });
 
             word.onmouseover = () => {
                 if(ritualComplete) return;
                 zapCount++;
                 document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${zapCount}/30`;
-                word.innerText = "💥";
                 if(zapCount === 30) startTheFlush();
-                setTimeout(() => { if(!ritualComplete) word.remove(); }, 80);
+                word.remove();
             };
         }
 
-        function spawnLoop() {
-            if(!ritualComplete) {
-                createWord();
-                setTimeout(spawnLoop, Math.max(30, 450 - (zapCount * 15)));
-            }
-        }
-        spawnLoop();
+        setInterval(() => { if(!ritualComplete) createWord(); }, 600);
 
         function startTheFlush() {
             ritualComplete = true;
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
             activeWords.forEach(w => w.sucking = true);
             setTimeout(() => {
                 let flushTimer = setInterval(() => {
                     activeWords.forEach((w, index) => {
-                        const dX = centerX - w.x; const dY = centerY - w.y;
-                        const dist = Math.sqrt(dX*dX + dY*dY);
-                        w.x += dX * 0.4 + (dY * 0.5); w.y += dY * 0.4 - (dX * 0.5);
+                        const dX = (window.innerWidth/2) - w.x; const dY = (window.innerHeight/2) - w.y;
+                        w.x += dX * 0.2; w.y += dY * 0.2;
                         w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
-                        w.element.style.transform = `scale(${dist/350})`;
-                        if(dist < 50) { w.element.remove(); activeWords.splice(index, 1); }
+                        if(Math.abs(dX) < 10) { w.element.remove(); activeWords.splice(index, 1); }
                     });
-                    if(activeWords.length === 0) { clearInterval(flushTimer); setTimeout(bigBang, 1500); }
+                    if(activeWords.length === 0) { clearInterval(flushTimer); bigBang(); }
                 }, 16);
-            }, 600);
+            }, 500);
         }
 
         function bigBang() {
-            activeWords.forEach(w => w.element.remove());
             document.getElementById('counter').style.display = 'none';
             starMat.opacity = 1;
             const starPos = starSystem.geometry.attributes.position.array;
@@ -155,36 +121,30 @@
             const explode = () => {
                 frame++;
                 for(let i=0; i<starCount; i++) {
-                    starPos[i*3] += vel[i*3] * 0.08;
-                    starPos[i*3+1] += vel[i*3+1] * 0.08;
-                    starPos[i*3+2] += vel[i*3+2] * 0.08;
+                    starPos[i*3] += vel[i*3] * 0.05;
+                    starPos[i*3+1] += vel[i*3+1] * 0.05;
+                    starPos[i*3+2] += vel[i*3+2] * 0.05;
                 }
                 starSystem.geometry.attributes.position.needsUpdate = true;
-                if(frame > 10 && orbGroup.position.z < 0) {
-                    orbGroup.position.z += 8; 
-                    const s = Math.min(2.5, orbGroup.scale.x * 1.1);
+                if(frame > 20 && orbGroup.position.z < 50) {
+                    orbGroup.position.z += 4; 
+                    const s = Math.min(4, orbGroup.scale.x * 1.15);
                     orbGroup.scale.set(s,s,s);
-                    glassOrb.material.opacity = 0.5; 
-                    shineLayer.material.opacity = 0.2; // The cool shine
-                    core.material.opacity = 1;
+                    core.material.opacity = 0.8;
+                    shell.material.opacity = 1;
                 }
-                if(frame < 250) requestAnimationFrame(explode);
+                if(frame < 200) requestAnimationFrame(explode);
                 else document.getElementById('zodiac-name').style.opacity = "1";
             };
             explode();
-            renderer.setClearColor(0xffffff, 1);
-            setTimeout(() => renderer.setClearColor(0x000000, 1), 120);
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            activeWords.forEach(w => {
-                if(!w.sucking) { w.x += w.dx; w.y += w.dy; w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px"; }
-            });
-            orbGroup.rotation.y += 0.005;
+            orbGroup.rotation.y += 0.01;
             renderer.render(scene, camera);
         }
         animate();
     </script>
 </body>
-</html> 
+</html>
