@@ -2,75 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | The Big Bang</title>
+    <title>KOC | Aries Reset</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
-        #ui-layer { position: absolute; inset: 0; pointer-events: none; z-index: 100; display: none; }
-        #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-size: 18px; letter-spacing: 2px; }
+        #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-size: 18px; letter-spacing: 2px; z-index: 10; }
         .floating-word { 
             position: absolute; color: #ff3300; font-weight: bold; 
             white-space: nowrap; pointer-events: auto; text-shadow: 0 0 10px #ff0000;
-            will-change: transform, left, top;
         }
-        #bottom-text { position: absolute; bottom: 50px; width: 100%; text-align: center; letter-spacing: 20px; font-size: 26px; color: #ff4500; opacity: 0; transition: opacity 3s; }
+        #ui-layer { 
+            position: absolute; bottom: 10%; width: 100%; text-align: center; 
+            color: #ff4500; font-size: 30px; letter-spacing: 25px; 
+            opacity: 0; transition: opacity 2s, transform 2s; pointer-events: none;
+        }
     </style>
 </head>
 <body>
 
-    <div id="ritual-layer">
-        <div id="counter">BUREAUCRACY_EXPUNGED: 0/30</div>
-    </div>
-
-    <div id="ui-layer">
-        <div id="bottom-text">ARIES</div>
-    </div>
+    <div id="counter">BUREAUCRACY_EXPUNGED: 0/30</div>
+    <div id="ui-layer">ARIES</div>
 
     <script>
         let zapCount = 0;
         let ritualComplete = false;
         let activeWords = [];
-        
         const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "ELEVATOR MUSIC", "REFERRALS", "FLAPPIN' GOWN", "BARIUM DRINK", "SUGAR", "CHAULKY", "FRONT DESK", "THEREPY", "PRIOR AUTH"];
-        const rareWord = "bedpan";
-
+        
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // GALAXY ENGINE
+        // BRIGHTER GALAXY
         const starGeo = new THREE.BufferGeometry();
-        const starCount = 10000;
+        const starCount = 20000;
         const starPos = new Float32Array(starCount * 3);
         const starVelo = new Float32Array(starCount * 3);
         for(let i=0; i<starCount; i++) {
-            starPos[i*3] = (Math.random() - 0.5) * 2; 
-            starPos[i*3+1] = (Math.random() - 0.5) * 2;
-            starPos[i*3+2] = (Math.random() - 0.5) * 2;
-            starVelo[i*3] = starPos[i*3];
-            starVelo[i*3+1] = starPos[i*3+1];
-            starVelo[i*3+2] = starPos[i*3+2];
+            starPos[i*3] = (Math.random() - 0.5) * 5; 
+            starPos[i*3+1] = (Math.random() - 0.5) * 5;
+            starPos[i*3+2] = (Math.random() - 0.5) * 5;
+            starVelo[i*3] = starPos[i*3] * (Math.random() * 5);
+            starVelo[i*3+1] = starPos[i*3+1] * (Math.random() * 5);
+            starVelo[i*3+2] = starPos[i*3+2] * (Math.random() * 5);
         }
         starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.03, color: 0xffffff, transparent: true, opacity: 0 });
+        const starMat = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff, transparent: true, opacity: 0 });
         const stars = new THREE.Points(starGeo, starMat);
         scene.add(stars);
 
-        // THE ORB (Starts tiny/hidden)
+        // THE ORB
         const orbGroup = new THREE.Group();
         const orb = new THREE.Mesh(
             new THREE.SphereGeometry(4, 64, 64),
-            new THREE.MeshPhongMaterial({ color: 0x110000, transparent: true, opacity: 0, emissive: 0xff4500, emissiveIntensity: 0.8 })
+            new THREE.MeshPhongMaterial({ color: 0x150000, transparent: true, opacity: 0, emissive: 0xff4500, emissiveIntensity: 1 })
         );
         orbGroup.add(orb);
-        orbGroup.scale.set(0.01, 0.01, 0.01);
+        orbGroup.scale.set(0.001, 0.001, 0.001);
         scene.add(orbGroup);
+        
         const light = new THREE.PointLight(0xffffff, 0, 100);
         light.position.set(10,10,10);
         scene.add(light);
-
         camera.position.z = 15;
 
         function createWord(isFrenzy = false) {
@@ -78,107 +73,90 @@
             const word = document.createElement('div');
             word.className = 'floating-word';
             const pick = Math.random();
-            word.innerText = (pick > 0.95) ? rareWord : wordList[Math.floor(Math.random() * wordList.length)];
+            word.innerText = (pick > 0.96) ? "bedpan" : wordList[Math.floor(Math.random() * wordList.length)];
             
             const depth = Math.random(); 
-            word.style.fontSize = (12 + depth * 35) + "px";
-            word.style.opacity = 0.4 + depth * 0.6;
+            word.style.fontSize = (14 + depth * 30) + "px";
+            word.style.opacity = 0.5 + depth * 0.5;
             
             const edge = Math.floor(Math.random() * 4);
             let x, y, dx = 0, dy = 0;
-            const speed = (1.5 + Math.random() * 4.5) * (isFrenzy ? 3 : 1);
+            const speed = (2 + Math.random() * 5) * (isFrenzy ? 4 : 1);
 
-            if(edge === 0) { x = -350; y = Math.random() * window.innerHeight; dx = speed; } 
-            if(edge === 1) { x = window.innerWidth + 350; y = Math.random() * window.innerHeight; dx = -speed; } 
-            if(edge === 2) { x = Math.random() * window.innerWidth; y = -100; dy = speed; } 
-            if(edge === 3) { x = Math.random() * window.innerWidth; y = window.innerHeight + 100; dy = -speed; } 
+            if(edge === 0) { x = -400; y = Math.random() * window.innerHeight; dx = speed; } 
+            else if(edge === 1) { x = window.innerWidth + 400; y = Math.random() * window.innerHeight; dx = -speed; } 
+            else if(edge === 2) { x = Math.random() * window.innerWidth; y = -150; dy = speed; } 
+            else { x = Math.random() * window.innerWidth; y = window.innerHeight + 150; dy = -speed; } 
 
             word.style.left = x + "px";
             word.style.top = y + "px";
             document.body.appendChild(word);
-
-            const wordObj = { element: word, x, y, dx, dy, rotation: Math.random() * 360 };
-            activeWords.push(wordObj);
+            activeWords.push({ element: word, x, y, dx, dy, rotation: Math.random() * 360 });
 
             word.onmouseover = () => {
                 if(ritualComplete) return;
                 zapCount++;
                 document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${zapCount}/30`;
                 word.innerText = "💥";
-                word.style.color = "#fff";
-                setTimeout(() => { word.remove(); }, 100);
-                activeWords = activeWords.filter(w => w !== wordObj);
+                setTimeout(() => { word.remove(); }, 80);
                 if(zapCount === 30) startTheFlush();
                 else createWord();
             };
         }
 
-        for(let i=0; i<12; i++) createWord();
+        for(let i=0; i<15; i++) createWord();
 
         function startTheFlush() {
             ritualComplete = true;
-            const frenzyInterval = setInterval(() => {
-                for(let i=0; i<5; i++) createWord(true);
-            }, 60);
-
+            const frenzy = setInterval(() => { for(let i=0; i<6; i++) createWord(true); }, 50);
+            
             setTimeout(() => {
-                clearInterval(frenzyInterval);
+                clearInterval(frenzy);
                 const centerX = window.innerWidth / 2;
                 const centerY = window.innerHeight / 2;
-
-                let flushTimer = setInterval(() => {
-                    activeWords.forEach(w => {
-                        const diffX = centerX - w.x;
-                        const diffY = centerY - w.y;
-                        const dist = Math.sqrt(diffX*diffX + diffY*diffY);
-                        w.x += diffX * 0.12 + (diffY * 0.2); 
-                        w.y += diffY * 0.12 - (diffX * 0.2);
-                        w.rotation += 25;
-                        w.element.style.left = w.x + "px";
-                        w.element.style.top = w.y + "px";
-                        w.element.style.transform = `scale(${dist/450}) rotate(${w.rotation}deg)`;
-                        w.element.style.opacity = dist/300;
+                let flush = setInterval(() => {
+                    activeWords.forEach((w, index) => {
+                        const dX = centerX - w.x; const dY = centerY - w.y;
+                        const dist = Math.sqrt(dX*dX + dY*dY);
+                        w.x += dX * 0.2 + (dY * 0.3); w.y += dY * 0.2 - (dX * 0.3);
+                        w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
+                        w.element.style.transform = `scale(${dist/300}) rotate(${dist}deg)`;
+                        if(dist < 20) { w.element.remove(); activeWords.splice(index, 1); }
                     });
-
-                    if(activeWords.length > 0 && Math.abs(centerX - activeWords[0].x) < 30) {
-                        clearInterval(flushTimer);
-                        activeWords.forEach(w => w.element.remove());
-                        setTimeout(bigBang, 2500);
-                    }
+                    if(activeWords.length === 0) { clearInterval(flush); setTimeout(bigBang, 1500); }
                 }, 16);
-            }, 3000);
+            }, 2000);
         }
 
         function bigBang() {
-            document.getElementById('ritual-layer').style.display = 'none';
-            document.getElementById('ui-layer').style.display = 'block';
+            document.getElementById('counter').style.display = 'none';
             starMat.opacity = 1;
             const pos = stars.geometry.attributes.position.array;
-            
-            let bangFrame = 0;
-            const animateBang = () => {
-                bangFrame++;
+            let frame = 0;
+            const explode = () => {
+                frame++;
                 for(let i=0; i<starCount; i++) {
-                    pos[i*3] += starVelo[i*3] * (bangFrame * 0.5);
-                    pos[i*3+1] += starVelo[i*3+1] * (bangFrame * 0.5);
-                    pos[i*3+2] += starVelo[i*3+2] * (bangFrame * 0.5);
+                    pos[i*3] += starVelo[i*3] * (frame * 0.1);
+                    pos[i*3+1] += starVelo[i*3+1] * (frame * 0.1);
+                    pos[i*3+2] += starVelo[i*3+2] * (frame * 0.1);
                 }
                 stars.geometry.attributes.position.needsUpdate = true;
                 
-                // Shoot Orb Forward
-                if(bangFrame > 30 && orbGroup.scale.x < 1) {
-                    const s = orbGroup.scale.x + 0.02;
+                if(frame > 20 && orbGroup.scale.x < 1) {
+                    const s = orbGroup.scale.x * 1.15 + 0.01;
                     orbGroup.scale.set(s,s,s);
-                    orb.material.opacity = s * 0.7;
-                    light.intensity = s * 3;
+                    orb.material.opacity = Math.min(s, 0.8);
+                    light.intensity = s * 4;
                 }
-                
-                if(bangFrame < 200) requestAnimationFrame(animateBang);
-                else document.getElementById('bottom-text').style.opacity = "1";
+                if(frame < 180) requestAnimationFrame(explode);
+                else {
+                    document.getElementById('ui-layer').style.opacity = "1";
+                    document.getElementById('ui-layer').style.transform = "translateY(-20px)";
+                }
             };
-            animateBang();
+            explode();
             renderer.setClearColor(0xffffff, 1);
-            setTimeout(() => { renderer.setClearColor(0x000000, 1); }, 150);
+            setTimeout(() => { renderer.setClearColor(0x000000, 1); }, 100);
         }
 
         function animate() {
@@ -186,14 +164,18 @@
             if(!ritualComplete) {
                 activeWords.forEach(w => {
                     w.x += w.dx; w.y += w.dy;
-                    w.element.style.left = w.x + "px";
-                    w.element.style.top = w.y + "px";
+                    w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
                 });
             }
             orbGroup.rotation.y += 0.005;
             renderer.render(scene, camera);
         }
         animate();
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
