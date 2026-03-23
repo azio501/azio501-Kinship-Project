@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,14 +11,15 @@
         .floating-word { 
             position: absolute; color: #ff3300; font-weight: bold; 
             white-space: nowrap; pointer-events: auto; text-shadow: 0 0 10px #ff0000;
+            will-change: transform, left, top;
         }
-        #bottom-text { position: absolute; bottom: 50px; width: 100%; text-align: center; letter-spacing: 20px; font-size: 26px; color: #ff4500; }
+        #bottom-text { position: absolute; bottom: 50px; width: 100%; text-align: center; letter-spacing: 20px; font-size: 26px; color: #ff4500; opacity: 0; transition: opacity 3s; }
     </style>
 </head>
 <body>
 
     <div id="ritual-layer">
-        <div id="counter">BUREAUCRACY_EXPUNGED: 0/20</div>
+        <div id="counter">BUREAUCRACY_EXPUNGED: 0/30</div>
     </div>
 
     <div id="ui-layer">
@@ -30,7 +31,6 @@
         let ritualComplete = false;
         let activeWords = [];
         
-        // The Crappy Word List
         const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "ELEVATOR MUSIC", "REFERRALS", "FLAPPIN' GOWN", "BARIUM DRINK", "SUGAR", "CHAULKY", "FRONT DESK", "THEREPY", "PRIOR AUTH"];
         const rareWord = "bedpan";
 
@@ -40,25 +40,32 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
+        // GALAXY ENGINE
         const starGeo = new THREE.BufferGeometry();
-        const starCount = 8000;
+        const starCount = 10000;
         const starPos = new Float32Array(starCount * 3);
+        const starVelo = new Float32Array(starCount * 3);
         for(let i=0; i<starCount; i++) {
-            starPos[i*3] = (Math.random() - 0.5) * 5; 
-            starPos[i*3+1] = (Math.random() - 0.5) * 5;
-            starPos[i*3+2] = (Math.random() - 0.5) * 5;
+            starPos[i*3] = (Math.random() - 0.5) * 2; 
+            starPos[i*3+1] = (Math.random() - 0.5) * 2;
+            starPos[i*3+2] = (Math.random() - 0.5) * 2;
+            starVelo[i*3] = starPos[i*3];
+            starVelo[i*3+1] = starPos[i*3+1];
+            starVelo[i*3+2] = starPos[i*3+2];
         }
         starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.04, color: 0xffffff, transparent: true, opacity: 0 });
+        const starMat = new THREE.PointsMaterial({ size: 0.03, color: 0xffffff, transparent: true, opacity: 0 });
         const stars = new THREE.Points(starGeo, starMat);
         scene.add(stars);
 
+        // THE ORB (Starts tiny/hidden)
         const orbGroup = new THREE.Group();
         const orb = new THREE.Mesh(
             new THREE.SphereGeometry(4, 64, 64),
-            new THREE.MeshPhongMaterial({ color: 0x110000, transparent: true, opacity: 0, emissive: 0xff4500, emissiveIntensity: 0.6 })
+            new THREE.MeshPhongMaterial({ color: 0x110000, transparent: true, opacity: 0, emissive: 0xff4500, emissiveIntensity: 0.8 })
         );
         orbGroup.add(orb);
+        orbGroup.scale.set(0.01, 0.01, 0.01);
         scene.add(orbGroup);
         const light = new THREE.PointLight(0xffffff, 0, 100);
         light.position.set(10,10,10);
@@ -67,13 +74,11 @@
         camera.position.z = 15;
 
         function createWord(isFrenzy = false) {
-            if(!isFrenzy && (zapCount >= 20 || ritualComplete)) return;
+            if(!isFrenzy && (zapCount >= 30 || ritualComplete)) return;
             const word = document.createElement('div');
             word.className = 'floating-word';
-            
-            // Logic to make Bedpan appear less often (1 in 15 chance)
             const pick = Math.random();
-            word.innerText = (pick > 0.93) ? rareWord : wordList[Math.floor(Math.random() * wordList.length)];
+            word.innerText = (pick > 0.95) ? rareWord : wordList[Math.floor(Math.random() * wordList.length)];
             
             const depth = Math.random(); 
             word.style.fontSize = (12 + depth * 35) + "px";
@@ -81,10 +86,10 @@
             
             const edge = Math.floor(Math.random() * 4);
             let x, y, dx = 0, dy = 0;
-            const speed = (1 + Math.random() * 4) * (isFrenzy ? 2.5 : 1);
+            const speed = (1.5 + Math.random() * 4.5) * (isFrenzy ? 3 : 1);
 
-            if(edge === 0) { x = -300; y = Math.random() * window.innerHeight; dx = speed; } 
-            if(edge === 1) { x = window.innerWidth + 300; y = Math.random() * window.innerHeight; dx = -speed; } 
+            if(edge === 0) { x = -350; y = Math.random() * window.innerHeight; dx = speed; } 
+            if(edge === 1) { x = window.innerWidth + 350; y = Math.random() * window.innerHeight; dx = -speed; } 
             if(edge === 2) { x = Math.random() * window.innerWidth; y = -100; dy = speed; } 
             if(edge === 3) { x = Math.random() * window.innerWidth; y = window.innerHeight + 100; dy = -speed; } 
 
@@ -98,23 +103,23 @@
             word.onmouseover = () => {
                 if(ritualComplete) return;
                 zapCount++;
-                document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${zapCount}/20`;
+                document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${zapCount}/30`;
                 word.innerText = "💥";
                 word.style.color = "#fff";
-                setTimeout(() => { word.remove(); }, 150);
+                setTimeout(() => { word.remove(); }, 100);
                 activeWords = activeWords.filter(w => w !== wordObj);
-                if(zapCount === 20) startTheFlush();
+                if(zapCount === 30) startTheFlush();
                 else createWord();
             };
         }
 
-        for(let i=0; i<10; i++) createWord();
+        for(let i=0; i<12; i++) createWord();
 
         function startTheFlush() {
             ritualComplete = true;
             const frenzyInterval = setInterval(() => {
-                for(let i=0; i<4; i++) createWord(true);
-            }, 80);
+                for(let i=0; i<5; i++) createWord(true);
+            }, 60);
 
             setTimeout(() => {
                 clearInterval(frenzyInterval);
@@ -126,23 +131,21 @@
                         const diffX = centerX - w.x;
                         const diffY = centerY - w.y;
                         const dist = Math.sqrt(diffX*diffX + diffY*diffY);
-                        
-                        w.x += diffX * 0.09 + (diffY * 0.15); 
-                        w.y += diffY * 0.09 - (diffX * 0.15);
-                        w.rotation += 20;
-                        
+                        w.x += diffX * 0.12 + (diffY * 0.2); 
+                        w.y += diffY * 0.12 - (diffX * 0.2);
+                        w.rotation += 25;
                         w.element.style.left = w.x + "px";
                         w.element.style.top = w.y + "px";
                         w.element.style.transform = `scale(${dist/450}) rotate(${w.rotation}deg)`;
-                        w.element.style.opacity = dist/350;
+                        w.element.style.opacity = dist/300;
                     });
 
-                    if(activeWords.length > 0 && Math.abs(centerX - activeWords[0].x) < 20) {
+                    if(activeWords.length > 0 && Math.abs(centerX - activeWords[0].x) < 30) {
                         clearInterval(flushTimer);
                         activeWords.forEach(w => w.element.remove());
                         setTimeout(bigBang, 2500);
                     }
-                }, 30);
+                }, 16);
             }, 3000);
         }
 
@@ -150,19 +153,30 @@
             document.getElementById('ritual-layer').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'block';
             starMat.opacity = 1;
-            const positions = stars.geometry.attributes.position.array;
+            const pos = stars.geometry.attributes.position.array;
+            
+            let bangFrame = 0;
             const animateBang = () => {
+                bangFrame++;
                 for(let i=0; i<starCount; i++) {
-                    positions[i*3] *= 1.2;
-                    positions[i*3+1] *= 1.2;
-                    positions[i*3+2] *= 1.2;
+                    pos[i*3] += starVelo[i*3] * (bangFrame * 0.5);
+                    pos[i*3+1] += starVelo[i*3+1] * (bangFrame * 0.5);
+                    pos[i*3+2] += starVelo[i*3+2] * (bangFrame * 0.5);
                 }
                 stars.geometry.attributes.position.needsUpdate = true;
-                if(positions[0] < 800) requestAnimationFrame(animateBang);
+                
+                // Shoot Orb Forward
+                if(bangFrame > 30 && orbGroup.scale.x < 1) {
+                    const s = orbGroup.scale.x + 0.02;
+                    orbGroup.scale.set(s,s,s);
+                    orb.material.opacity = s * 0.7;
+                    light.intensity = s * 3;
+                }
+                
+                if(bangFrame < 200) requestAnimationFrame(animateBang);
+                else document.getElementById('bottom-text').style.opacity = "1";
             };
             animateBang();
-            orb.material.opacity = 0.7;
-            light.intensity = 3;
             renderer.setClearColor(0xffffff, 1);
             setTimeout(() => { renderer.setClearColor(0x000000, 1); }, 150);
         }
@@ -176,10 +190,10 @@
                     w.element.style.top = w.y + "px";
                 });
             }
-            orbGroup.rotation.y += 0.004;
+            orbGroup.rotation.y += 0.005;
             renderer.render(scene, camera);
         }
         animate();
     </script>
 </body>
-</html> 
+</html>
