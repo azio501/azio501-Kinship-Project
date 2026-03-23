@@ -2,36 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries v50 Catharsis</title>
+    <title>KOC | Aries v51 Final Swarm</title>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
         #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-size: 14px; letter-spacing: 2px; z-index: 100; font-weight: bold; }
 
         .word {
             position: fixed; color: #ff2200; font-weight: 900; white-space: nowrap;
-            text-shadow: 0 0 15px #ff0000; font-size: 22px; z-index: 50;
+            text-shadow: 0 0 15px #ff0000; font-size: 24px; z-index: 50;
             cursor: pointer; user-select: none; will-change: transform;
-            pointer-events: auto; opacity: 0.8;
+            pointer-events: auto; opacity: 0.8; padding: 10px; /* Bigger hit area */
         }
 
-        /* STABLE GLASS ORB */
+        /* HEAVY DARK ORB */
         #orb {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0.9);
             width: 450px; height: 450px; border-radius: 50%;
-            background: rgba(10, 10, 10, 0.95);
+            background: rgba(5, 5, 5, 0.98);
             box-shadow: 
-                inset 10px 10px 40px rgba(255,255,255,0.05),
-                inset -20px -20px 60px rgba(0,0,0,1),
-                0 0 30px rgba(255,69,0,0.1);
+                inset 10px 10px 50px rgba(255,255,255,0.05),
+                inset -20px -20px 80px rgba(0,0,0,1),
+                0 0 30px rgba(255,69,0,0.05);
             opacity: 0.1; display: flex; align-items: center; justify-content: center;
-            transition: all 0.5s ease;
+            transition: all 0.6s ease-in-out;
             z-index: 5;
         }
 
         #zodiac-name {
             position: fixed; bottom: 50px; width: 100%; text-align: center;
-            color: #ffaa00; font-size: 38px; letter-spacing: 65px; text-indent: 65px;
+            color: #ffaa00; font-size: 42px; letter-spacing: 70px; text-indent: 70px;
             opacity: 0; font-weight: bold; transition: opacity 8s ease; z-index: 10;
         }
     </style>
@@ -46,7 +46,7 @@
         let zapCount = 0;
         let ritualComplete = false;
         const targetGoal = 50; 
-        const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "REFERRALS", "FRONT DESK", "PRIOR AUTH", "bedpan", "BARIUM DRINK", "CO-AUTH", "ELEVATOR MUSIC", "FORMS", "RE-FILL", "DEDUCTIBLE", "PRE-EXISTING", "OUT-OF-NETWORK"];
+        const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "REFERRALS", "FRONT DESK", "PRIOR AUTH", "bedpan", "BARIUM DRINK", "CO-AUTH", "ELEVATOR MUSIC", "FORMS", "RE-FILL", "DEDUCTIBLE", "PRE-EXISTING", "OUT-OF-NETWORK", "AMBULANCE BILL", "LAB WORK"];
         let activeWords = [];
 
         function spawn() {
@@ -55,12 +55,13 @@
             w.className = 'word';
             w.innerText = wordList[Math.floor(Math.random() * wordList.length)];
             
-            // Random positions everywhere
+            // Random start positions
             let x = Math.random() * 100;
             let y = Math.random() * 100;
-            // SLOW DRIFT
-            let dx = (Math.random() - 0.5) * 0.5;
-            let dy = (Math.random() - 0.5) * 0.5;
+            
+            // GLACIAL SPEED (Very slow)
+            let dx = (Math.random() - 0.5) * 0.2;
+            let dy = (Math.random() - 0.5) * 0.2;
             
             w.style.left = x + 'vw';
             w.style.top = y + 'vh';
@@ -75,8 +76,10 @@
                 
                 const orb = document.getElementById('orb');
                 const p = zapCount / targetGoal;
-                orb.style.opacity = 0.1 + (p * 0.85);
-                orb.style.boxShadow = `inset 10px 10px 40px rgba(255,255,255,${p*0.1}), 0 0 ${30 + (p * 70)}px rgba(255,69,0,${p*0.4})`;
+                // Orb gets clearer and more "ignited"
+                orb.style.opacity = 0.1 + (p * 0.9);
+                orb.style.boxShadow = `inset 10px 10px 50px rgba(255,255,255,${p*0.1}), 
+                                       0 0 ${40 + (p * 100)}px rgba(255,69,0,${p*0.5})`;
                 
                 w.remove();
                 activeWords = activeWords.filter(item => item !== wordObj);
@@ -86,8 +89,8 @@
             activeWords.push(wordObj);
         }
 
-        // INITIAL MASSIVE SWARM (Start with 100 words)
-        for(let i=0; i<100; i++) spawn();
+        // START WITH A MASSIVE WALL (150 words)
+        for(let i=0; i<150; i++) spawn();
 
         function update() {
             if(!ritualComplete) {
@@ -95,18 +98,18 @@
                     obj.x += obj.dx;
                     obj.y += obj.dy;
                     
-                    // Soft Wrap
-                    if(obj.x < -10) obj.x = 110;
-                    if(obj.x > 110) obj.x = -10;
-                    if(obj.y < -10) obj.y = 110;
-                    if(obj.y > 110) obj.y = -10;
+                    // Slow Screen Wrap
+                    if(obj.x < -15) obj.x = 115;
+                    if(obj.x > 115) obj.x = -15;
+                    if(obj.y < -15) obj.y = 115;
+                    if(obj.y > 115) obj.y = -15;
 
                     obj.el.style.left = obj.x + 'vw';
                     obj.el.style.top = obj.y + 'vh';
                 });
 
-                // Maintain the thick crowd
-                if (activeWords.length < 80) spawn();
+                // Keep the screen flooded
+                if (activeWords.length < 130) spawn();
             }
             requestAnimationFrame(update);
         }
@@ -117,11 +120,16 @@
             document.getElementById('counter').style.display = 'none';
             activeWords.forEach(obj => obj.el.remove());
             activeWords = [];
+
             const orb = document.getElementById('orb');
             orb.style.opacity = '1';
             orb.style.transform = 'translate(-50%, -50%) scale(1.1)';
-            orb.style.background = 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, #000 100%)';
-            setTimeout(() => { document.getElementById('zodiac-name').style.opacity = '1'; }, 1000);
+            // The Reveal: A bright, polished core
+            orb.style.background = 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4) 0%, rgba(255,160,0,0.1) 40%, #000 100%)';
+            
+            setTimeout(() => {
+                document.getElementById('zodiac-name').style.opacity = '1';
+            }, 1000);
         }
     </script>
 </body>
