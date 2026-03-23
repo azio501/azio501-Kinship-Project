@@ -102,14 +102,11 @@
     </div>
 
     <script>
-        // Start the transition after the pulse finishes (8 seconds)
         setTimeout(() => {
             const intro = document.getElementById('intro-screen');
             const main = document.getElementById('main-ui');
-            
             intro.style.transition = "opacity 2s";
             intro.style.opacity = "0";
-            
             setTimeout(() => {
                 intro.style.display = 'none';
                 main.style.visibility = 'visible';
