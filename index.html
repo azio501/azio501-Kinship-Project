@@ -2,56 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries v63 Fixed Physics</title>
+    <title>KOC | Aries v64 Final Build</title>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: sans-serif; cursor: crosshair; }
         
+        /* THE UNIVERSE BACKGROUND */
+        #starfield {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #001 0%, #000 100%);
+            z-index: 1;
+        }
+
         #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-family: 'Courier New', monospace; font-weight: bold; z-index: 100; }
 
         .word {
-            position: fixed; color: #ff0000; font-weight: 900; font-size: 28px;
+            position: fixed; color: #ff0000; font-weight: 900; font-size: 30px;
             text-shadow: 0 0 15px #ff0000; cursor: pointer; user-select: none;
-            z-index: 50; transition: transform 0.1s;
+            z-index: 50; 
         }
 
         #blackout { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; z-index: 1000; }
 
-        /* THE ORB WINDOW */
+        /* THE ORB */
         #final-reveal { 
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            width: 450px; height: 450px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            z-index: 1100; overflow: hidden;
-            box-shadow: 0 0 100px rgba(255,100,0,0.4);
+            position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            width: 550px; height: 550px; display: flex; align-items: center; justify-content: center;
+            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            z-index: 1100;
         }
 
-        /* CLIPPING ARIES OUT OF GLASSORBSCORPIO.PNG */
         #zodiac-img { 
-            position: absolute;
-            width: 400%; /* Assuming a grid, adjust to zoom on Aries */
-            height: auto;
-            /* Adjust these percentages to move the "window" to the Aries Orb */
-            left: 0%; top: 0%; 
-            animation: orbFloat 4s ease-in-out infinite;
+            width: 100%; height: 100%; object-fit: contain;
+            filter: drop-shadow(0 0 50px rgba(255,100,0,0.4));
+            animation: slowRotate 20s linear infinite;
         }
 
-        @keyframes orbFloat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes slowRotate { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+
+        #zodiac-name {
+            position: fixed; bottom: 80px; width: 100%; text-align: center;
+            color: #ffaa00; font-size: 52px; letter-spacing: 80px; text-indent: 80px;
+            opacity: 0; font-weight: bold; transition: opacity 3s; z-index: 1200;
         }
 
-        .streak { position: absolute; background: #fff; width: 3px; height: 150px; z-index: 1050; }
+        .streak { position: absolute; background: #fff; width: 3px; height: 200px; z-index: 1050; }
     </style>
 </head>
 <body>
 
+    <div id="starfield"></div>
     <div id="counter">BUREAUCRACY_EXPUNGED: 0/30</div>
     <div id="blackout"></div>
     
     <div id="final-reveal">
-        <img id="zodiac-img" src="Glassorbscorpio.png" alt="Aries Orb">
+        <img id="zodiac-img" src="Glass Orb Aries copilot.png" alt="Aries Orb">
     </div>
+
+    <div id="zodiac-name">ARIES</div>
 
     <script>
         let count = 0;
@@ -68,10 +75,10 @@
             let sx = x ?? Math.random() * 80 + 10;
             let sy = y ?? Math.random() * 80 + 10;
             
-            // GRADUAL SPEED: Speed increases as count goes from 0 to 30
-            let currentBaseSpeed = 1 + (count * 0.15); 
-            let dx = (Math.random() - 0.5) * currentBaseSpeed;
-            let dy = (Math.random() - 0.5) * currentBaseSpeed;
+            // PHYSICS: Speed is controlled globally by the 'count'
+            let currentVelocity = 0.5 + (count * 0.15); 
+            let dx = (Math.random() - 0.5) * currentVelocity;
+            let dy = (Math.random() - 0.5) * currentVelocity;
             
             el.style.left = sx + 'vw'; el.style.top = sy + 'vh';
             document.body.appendChild(el);
@@ -85,22 +92,27 @@
                 active = active.filter(i => i !== obj);
                 
                 if(count < 30) {
-                    // One hit = 4 new words. Slow build.
+                    // One hit = 4 more words.
                     for(let i=0; i<4; i++) spawn(obj.x, obj.y);
+                    
+                    // Update speed of all existing words
+                    active.forEach(word => {
+                        word.dx *= 1.2;
+                        word.dy *= 1.2;
+                    });
                 } else {
-                    finishRitual();
+                    triggerFinalReveal();
                 }
             };
             active.push(obj);
         }
 
-        // Start with 2
         spawn(); spawn();
 
         function update() {
             if(!done) {
                 active.forEach(o => {
-                    o.x += o.dx * 0.2; o.y += o.dy * 0.2;
+                    o.x += o.dx; o.y += o.dy;
                     if(o.x < -15) o.x = 115; if(o.x > 115) o.x = -15;
                     if(o.y < -15) o.y = 115; if(o.y > 115) o.y = -15;
                     o.el.style.left = o.x + 'vw'; o.el.style.top = o.y + 'vh';
@@ -110,7 +122,7 @@
         }
         update();
 
-        function finishRitual() {
+        function triggerFinalReveal() {
             done = true;
             document.getElementById('blackout').style.display = 'block';
             active.forEach(o => o.el.remove());
@@ -119,7 +131,7 @@
                 document.getElementById('blackout').style.display = 'none';
                 
                 // THE BAM
-                for(let i=0; i<60; i++) {
+                for(let i=0; i<80; i++) {
                     const s = document.createElement('div');
                     s.className = 'streak';
                     s.style.left = '50vw'; s.style.top = '50vh';
@@ -128,12 +140,13 @@
                     document.body.appendChild(s);
                     s.animate([
                         { transform: `rotate(${angle}deg) translateY(0)`, opacity: 1 },
-                        { transform: `rotate(${angle}deg) translateY(1000px)`, opacity: 0 }
-                    ], { duration: 800, easing: 'ease-out' });
-                    setTimeout(() => s.remove(), 800);
+                        { transform: `rotate(${angle}deg) translateY(1200px)`, opacity: 0 }
+                    ], { duration: 700, easing: 'ease-out' });
+                    setTimeout(() => s.remove(), 700);
                 }
 
                 document.getElementById('final-reveal').style.transform = 'translate(-50%, -50%) scale(1)';
+                document.getElementById('zodiac-name').style.opacity = '1';
             }, 3000);
         }
     </script>
