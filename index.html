@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,15 +29,17 @@
         let zapCount = 0;
         let ritualComplete = false;
         let activeWords = [];
-        const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "BEDPAN", "PET SCAN", "CO-PAYS", "PAPERWORK", "HOLD MUSIC", "REFERRALS"];
         
+        // The Crappy Word List
+        const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "ELEVATOR MUSIC", "REFERRALS", "FLAPPIN' GOWN", "BARIUM DRINK", "SUGAR", "CHAULKY", "FRONT DESK", "THEREPY", "PRIOR AUTH"];
+        const rareWord = "bedpan";
+
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // REAL NIGHT SKY (Hidden until Bang)
         const starGeo = new THREE.BufferGeometry();
         const starCount = 8000;
         const starPos = new Float32Array(starCount * 3);
@@ -51,7 +53,6 @@
         const stars = new THREE.Points(starGeo, starMat);
         scene.add(stars);
 
-        // THE ORB
         const orbGroup = new THREE.Group();
         const orb = new THREE.Mesh(
             new THREE.SphereGeometry(4, 64, 64),
@@ -69,7 +70,10 @@
             if(!isFrenzy && (zapCount >= 20 || ritualComplete)) return;
             const word = document.createElement('div');
             word.className = 'floating-word';
-            word.innerText = wordList[Math.floor(Math.random() * wordList.length)];
+            
+            // Logic to make Bedpan appear less often (1 in 15 chance)
+            const pick = Math.random();
+            word.innerText = (pick > 0.93) ? rareWord : wordList[Math.floor(Math.random() * wordList.length)];
             
             const depth = Math.random(); 
             word.style.fontSize = (12 + depth * 35) + "px";
@@ -77,10 +81,10 @@
             
             const edge = Math.floor(Math.random() * 4);
             let x, y, dx = 0, dy = 0;
-            const speed = (1 + Math.random() * 4) * (isFrenzy ? 2 : 1);
+            const speed = (1 + Math.random() * 4) * (isFrenzy ? 2.5 : 1);
 
-            if(edge === 0) { x = -250; y = Math.random() * window.innerHeight; dx = speed; } 
-            if(edge === 1) { x = window.innerWidth + 250; y = Math.random() * window.innerHeight; dx = -speed; } 
+            if(edge === 0) { x = -300; y = Math.random() * window.innerHeight; dx = speed; } 
+            if(edge === 1) { x = window.innerWidth + 300; y = Math.random() * window.innerHeight; dx = -speed; } 
             if(edge === 2) { x = Math.random() * window.innerWidth; y = -100; dy = speed; } 
             if(edge === 3) { x = Math.random() * window.innerWidth; y = window.innerHeight + 100; dy = -speed; } 
 
@@ -88,7 +92,7 @@
             word.style.top = y + "px";
             document.body.appendChild(word);
 
-            const wordObj = { element: word, x, y, dx, dy, rotation: 0 };
+            const wordObj = { element: word, x, y, dx, dy, rotation: Math.random() * 360 };
             activeWords.push(wordObj);
 
             word.onmouseover = () => {
@@ -104,14 +108,13 @@
             };
         }
 
-        for(let i=0; i<8; i++) createWord();
+        for(let i=0; i<10; i++) createWord();
 
         function startTheFlush() {
             ritualComplete = true;
-            // 3-Second Frenzy: Multiply words
             const frenzyInterval = setInterval(() => {
-                for(let i=0; i<3; i++) createWord(true);
-            }, 100);
+                for(let i=0; i<4; i++) createWord(true);
+            }, 80);
 
             setTimeout(() => {
                 clearInterval(frenzyInterval);
@@ -124,17 +127,17 @@
                         const diffY = centerY - w.y;
                         const dist = Math.sqrt(diffX*diffX + diffY*diffY);
                         
-                        w.x += diffX * 0.08 + (diffY * 0.12); 
-                        w.y += diffY * 0.08 - (diffX * 0.12);
-                        w.rotation += 15;
+                        w.x += diffX * 0.09 + (diffY * 0.15); 
+                        w.y += diffY * 0.09 - (diffX * 0.15);
+                        w.rotation += 20;
                         
                         w.element.style.left = w.x + "px";
                         w.element.style.top = w.y + "px";
-                        w.element.style.transform = `scale(${dist/400}) rotate(${w.rotation}deg)`;
-                        w.element.style.opacity = dist/300;
+                        w.element.style.transform = `scale(${dist/450}) rotate(${w.rotation}deg)`;
+                        w.element.style.opacity = dist/350;
                     });
 
-                    if(activeWords.length > 0 && Math.abs(centerX - activeWords[0].x) < 15) {
+                    if(activeWords.length > 0 && Math.abs(centerX - activeWords[0].x) < 20) {
                         clearInterval(flushTimer);
                         activeWords.forEach(w => w.element.remove());
                         setTimeout(bigBang, 2500);
@@ -146,23 +149,20 @@
         function bigBang() {
             document.getElementById('ritual-layer').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'block';
-            
             starMat.opacity = 1;
             const positions = stars.geometry.attributes.position.array;
-            
             const animateBang = () => {
                 for(let i=0; i<starCount; i++) {
-                    positions[i*3] *= 1.18;
-                    positions[i*3+1] *= 1.18;
-                    positions[i*3+2] *= 1.18;
+                    positions[i*3] *= 1.2;
+                    positions[i*3+1] *= 1.2;
+                    positions[i*3+2] *= 1.2;
                 }
                 stars.geometry.attributes.position.needsUpdate = true;
-                if(positions[0] < 500) requestAnimationFrame(animateBang);
+                if(positions[0] < 800) requestAnimationFrame(animateBang);
             };
             animateBang();
-
-            orb.material.opacity = 0.6;
-            light.intensity = 2.5;
+            orb.material.opacity = 0.7;
+            light.intensity = 3;
             renderer.setClearColor(0xffffff, 1);
             setTimeout(() => { renderer.setClearColor(0x000000, 1); }, 150);
         }
@@ -182,4 +182,4 @@
         animate();
     </script>
 </body>
-</html>
+</html> 
