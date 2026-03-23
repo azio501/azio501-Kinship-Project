@@ -2,147 +2,108 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries v67 Deep Space</title>
+    <title>KOC | Kinship Project Restoration</title>
     <style>
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: white; }
         
-        #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-weight: bold; z-index: 100; letter-spacing: 2px; }
-
-        .word {
-            position: fixed; color: #ff0000; font-weight: 900; font-size: 30px;
-            text-shadow: 0 0 15px #ff0000; cursor: pointer; user-select: none;
-            z-index: 50; 
+        /* INTRO PULSE */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 2000; background: #000;
         }
+        .pulse-text {
+            font-size: 3rem; letter-spacing: 15px; opacity: 0;
+            animation: welcomePulse 4s ease-in-out 2 forwards;
+        }
+        .tagline { font-size: 1rem; letter-spacing: 5px; margin-top: 20px; opacity: 0; animation: fadeIn 2s 1s forwards; }
 
-        #blackout { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; z-index: 1000; }
+        @keyframes welcomePulse {
+            0% { opacity: 0; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.05); }
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
 
-        /* THE ORB - Blended into the Universe */
-        #final-reveal { 
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            width: 80vh; height: 80vh; /* Scaled to the screen height */
+        /* MAIN LAYOUT */
+        #main-ui { opacity: 0; transition: opacity 2s; display: flex; }
+
+        /* LEFT NAVIGATION - The 5 Icons */
+        #nav-sidebar {
+            width: 150px; height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; gap: 30px;
+            padding-left: 40px; z-index: 100;
+        }
+        .nav-icon {
+            width: 60px; height: 60px; border: 2px solid; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            transition: transform 2s ease-out; 
-            z-index: 1100;
+            cursor: pointer; transition: 0.3s; position: relative;
         }
+        .nav-icon:hover { transform: scale(1.2); box-shadow: 0 0 20px currentColor; }
+        
+        /* Color Coding based on your screenshots */
+        .icon-home { color: #ff4500; border-color: #ff4500; }
+        .icon-lexicon { color: #00d2ff; border-color: #00d2ff; }
+        .icon-orrery { color: #9d00ff; border-color: #9d00ff; }
+        .icon-doctors { color: #39ff14; border-color: #39ff14; }
+        .icon-gallery { color: #ff00ea; border-color: #ff00ea; }
 
-        #zodiac-img { 
-            width: 100%; height: 100%; object-fit: contain;
-            /* This blur/shadow blends the square edges into the black background */
-            filter: drop-shadow(0 0 40px #000) contrast(1.1);
-            border-radius: 50%;
+        /* POPUP DEFINITIONS */
+        .tooltip {
+            position: absolute; left: 80px; background: rgba(20, 20, 20, 0.9);
+            border: 1px solid currentColor; padding: 15px; width: 200px;
+            opacity: 0; pointer-events: none; transition: 0.3s; font-size: 0.8rem;
         }
+        .nav-icon:hover .tooltip { opacity: 1; }
+
+        /* CENTER ORB */
+        #center-stage {
+            flex-grow: 1; display: flex; align-items: center; justify-content: center;
+            height: 100vh; position: relative;
+        }
+        #orb-container {
+            width: 500px; height: 500px; border-radius: 50%;
+            overflow: hidden; box-shadow: 0 0 100px rgba(255,100,0,0.2);
+        }
+        #orb-img { width: 100%; height: 100%; object-fit: cover; }
 
         #zodiac-name {
-            position: fixed; bottom: 5vh; width: 100%; text-align: center;
-            color: #ffaa00; font-size: 6vw; letter-spacing: 5vw; text-indent: 5vw;
-            opacity: 0; font-weight: bold; transition: opacity 4s; z-index: 1200;
+            position: absolute; bottom: 10%; width: 100%; text-align: center;
+            font-size: 4rem; letter-spacing: 60px; text-indent: 60px;
+            color: #ffaa00; font-weight: bold;
         }
-
-        .streak { position: absolute; background: #fff; width: 2px; height: 250px; z-index: 1050; }
     </style>
 </head>
 <body>
 
-    <div id="counter">SYSTEM_CLEANSE: 0/30</div>
-    <div id="blackout"></div>
-    
-    <div id="final-reveal">
-        <img id="zodiac-img" src="Glass%20Orb%20Aries%20copilot.png" alt="Aries Orb">
+    <div id="intro-screen">
+        <div class="pulse-text">WELCOME TO KINSHIP</div>
+        <div class="tagline">The Collective Energy of Healing</div>
     </div>
 
-    <div id="zodiac-name">ARIES</div>
+    <div id="main-ui">
+        <div id="nav-sidebar">
+            <div class="nav-icon icon-home">H<div class="tooltip">HOME: Return to the center of Kinship.</div></div>
+            <div class="nav-icon icon-lexicon">L<div class="tooltip">LEXICON: The encyclopedia of terms and shared wisdom.</div></div>
+            <div class="nav-icon icon-orrery">O<div class="tooltip">ORRERY: View the celestial trade of energy.</div></div>
+            <div class="nav-icon icon-doctors">D<div class="tooltip">DOCTORS QUARTERS: Information and professional insights.</div></div>
+            <div class="nav-icon icon-gallery">G<div class="tooltip">GALLERY: Stories and art from the community.</div></div>
+        </div>
+
+        <div id="center-stage">
+            <div id="orb-container">
+                <img id="orb-img" src="Glass%20Orb%20Aries%20copilot.png" alt="Aries Orb">
+            </div>
+            <div id="zodiac-name">ARIES</div>
+        </div>
+    </div>
 
     <script>
-        let count = 0;
-        let done = false;
-        const list = ["WAITING ROOMS", "INSURANCE", "COPAY", "PAPERWORK", "REFERRALS", "MEDICARE", "PRIOR AUTH", "PET SCAN"];
-        let active = [];
-
-        function spawn() {
-            if(done) return;
-            const el = document.createElement('div');
-            el.className = 'word';
-            el.innerText = list[Math.floor(Math.random() * list.length)];
-            
-            // Spawn them around the edges so they drift IN
-            const side = Math.floor(Math.random() * 4);
-            let sx, sy;
-            if(side === 0) { sx = -10; sy = Math.random() * 100; }
-            else if(side === 1) { sx = 110; sy = Math.random() * 100; }
-            else if(side === 2) { sx = Math.random() * 100; sy = -10; }
-            else { sx = Math.random() * 100; sy = 110; }
-            
-            // Drift towards the center
-            let dx = (50 - sx) * 0.02;
-            let dy = (50 - sy) * 0.02;
-            
-            el.style.left = sx + 'vw'; el.style.top = sy + 'vh';
-            document.body.appendChild(el);
-            const obj = { el, x: sx, y: sy, dx, dy };
-
-            el.onmouseover = () => {
-                if(done) return;
-                count++;
-                document.getElementById('counter').innerText = `SYSTEM_CLEANSE: ${count}/30`;
-                el.style.transform = "scale(0)";
-                setTimeout(() => el.remove(), 100);
-                active = active.filter(i => i !== obj);
-                
-                if(count < 30) {
-                    for(let i=0; i<3; i++) spawn();
-                } else {
-                    executeReveal();
-                }
-            };
-            active.push(obj);
-        }
-
-        // Start the swarm
-        for(let i=0; i<5; i++) spawn();
-
-        function update() {
-            if(!done) {
-                active.forEach(o => {
-                    o.x += o.dx; o.y += o.dy;
-                    o.el.style.left = o.x + 'vw'; o.el.style.top = o.y + 'vh';
-                    // If they reach center, they bounce back out
-                    if(Math.abs(o.x - 50) < 5 && Math.abs(o.y - 50) < 5) {
-                        o.dx *= -1.5; o.dy *= -1.5;
-                    }
-                });
-                if(active.length < 10) spawn();
-            }
-            requestAnimationFrame(update);
-        }
-        update();
-
-        function executeReveal() {
-            done = true;
-            document.getElementById('blackout').style.display = 'block';
-            active.forEach(o => o.el.remove());
-
-            setTimeout(() => {
-                document.getElementById('blackout').style.display = 'none';
-                
-                // THE BAM - Pure Light
-                for(let i=0; i<100; i++) {
-                    const s = document.createElement('div');
-                    s.className = 'streak';
-                    s.style.left = '50vw'; s.style.top = '50vh';
-                    const angle = Math.random() * 360;
-                    s.style.transform = `rotate(${angle}deg) translateY(0)`;
-                    document.body.appendChild(s);
-                    s.animate([
-                        { transform: `rotate(${angle}deg) translateY(0)`, opacity: 1 },
-                        { transform: `rotate(${angle}deg) translateY(1200px)`, opacity: 0 }
-                    ], { duration: 600, easing: 'ease-out' });
-                    setTimeout(() => s.remove(), 600);
-                }
-
-                document.getElementById('final-reveal').style.transform = 'translate(-50%, -50%) scale(1)';
-                document.getElementById('zodiac-name').style.opacity = '1';
-            }, 3000);
-        }
+        // Transition from Intro to Main UI
+        setTimeout(() => {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('main-ui').style.opacity = '1';
+        }, 8500); // 4s pulse x 2 + a bit of buffer
     </script>
 </body>
 </html>
