@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries Reset v35</title>
+    <title>KOC | Aries Reset v36</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
@@ -35,45 +35,63 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
+        // Star Field
         const starGeo = new THREE.BufferGeometry();
-        const starCount = 20000;
+        const starCount = 30000;
         const pos = new Float32Array(starCount * 3);
         const vel = new Float32Array(starCount * 3);
         for(let i=0; i<starCount; i++) {
             pos[i*3] = (Math.random() - 0.5) * 20;
             pos[i*3+1] = (Math.random() - 0.5) * 20;
             pos[i*3+2] = (Math.random() - 0.5) * 20;
-            vel[i*3] = pos[i*3] * 50;
-            vel[i*3+1] = pos[i*3+1] * 50;
-            vel[i*3+2] = pos[i*3+2] * 50;
+            vel[i*3] = pos[i*3] * 60;
+            vel[i*3+1] = pos[i*3+1] * 60;
+            vel[i*3+2] = pos[i*3+2] * 60;
         }
         starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff, transparent: true, opacity: 0 });
+        const starMat = new THREE.PointsMaterial({ size: 0.04, color: 0xffffff, transparent: true, opacity: 0 });
         const starSystem = new THREE.Points(starGeo, starMat);
         scene.add(starSystem);
 
-        // --- THE RECOVERY ORB ---
+        // --- CRYSTAL ORB ASSEMBLY ---
         const orbGroup = new THREE.Group();
         
-        // Solid Glowing Core (To ensure visibility)
-        const core = new THREE.Mesh(
-            new THREE.SphereGeometry(10, 32, 32),
-            new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0 })
+        // 1. The Thick Glass (Physical-style but Standard for reliability)
+        const glass = new THREE.Mesh(
+            new THREE.SphereGeometry(10, 64, 64),
+            new THREE.MeshStandardMaterial({ 
+                color: 0xffffff, metalness: 0.2, roughness: 0.05, 
+                transparent: true, opacity: 0, 
+                emissive: 0x111111 
+            })
         );
         
-        // Wireframe Shell
-        const shell = new THREE.Mesh(
-            new THREE.IcosahedronGeometry(10.5, 1),
-            new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0 })
+        // 2. The Golden Heart (Aries Constellation Core)
+        const heart = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(6, 1),
+            new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true, transparent: true, opacity: 0 })
+        );
+
+        // 3. The Polished Shine (Rim Light Layer)
+        const shine = new THREE.Mesh(
+            new THREE.SphereGeometry(10.2, 64, 64),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, side: THREE.BackSide })
         );
         
-        orbGroup.add(core);
-        orbGroup.add(shell);
-        orbGroup.position.z = -200; 
+        orbGroup.add(glass);
+        orbGroup.add(heart);
+        orbGroup.add(shine);
+        orbGroup.position.z = -300; 
         orbGroup.scale.set(0.1, 0.1, 0.1);
         scene.add(orbGroup);
 
-        camera.position.z = 100;
+        // Lighting
+        const mainLight = new THREE.PointLight(0xffffff, 4, 1000);
+        mainLight.position.set(50, 50, 100);
+        scene.add(mainLight);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
+        camera.position.z = 80;
 
         function createWord() {
             if(ritualComplete) return;
@@ -84,7 +102,14 @@
             word.style.left = Math.random() * window.innerWidth + "px";
             word.style.top = Math.random() * window.innerHeight + "px";
             document.body.appendChild(word);
-            activeWords.push({ element: word, x: parseFloat(word.style.left), y: parseFloat(word.style.top), dx: (Math.random()-0.5)*10, dy: (Math.random()-0.5)*10, sucking: false });
+            activeWords.push({ 
+                element: word, 
+                x: parseFloat(word.style.left), 
+                y: parseFloat(word.style.top), 
+                dx: (Math.random()-0.5)*12, 
+                dy: (Math.random()-0.5)*12, 
+                sucking: false 
+            });
 
             word.onmouseover = () => {
                 if(ritualComplete) return;
@@ -95,7 +120,8 @@
             };
         }
 
-        setInterval(() => { if(!ritualComplete) createWord(); }, 600);
+        function spawn() { if(!ritualComplete) { createWord(); setTimeout(spawn, 600); } }
+        spawn();
 
         function startTheFlush() {
             ritualComplete = true;
@@ -104,9 +130,10 @@
                 let flushTimer = setInterval(() => {
                     activeWords.forEach((w, index) => {
                         const dX = (window.innerWidth/2) - w.x; const dY = (window.innerHeight/2) - w.y;
-                        w.x += dX * 0.2; w.y += dY * 0.2;
+                        w.x += dX * 0.25; w.y += dY * 0.25;
                         w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
-                        if(Math.abs(dX) < 10) { w.element.remove(); activeWords.splice(index, 1); }
+                        w.element.style.transform = `scale(${Math.abs(dX)/200})`;
+                        if(Math.abs(dX) < 15) { w.element.remove(); activeWords.splice(index, 1); }
                     });
                     if(activeWords.length === 0) { clearInterval(flushTimer); bigBang(); }
                 }, 16);
@@ -121,19 +148,20 @@
             const explode = () => {
                 frame++;
                 for(let i=0; i<starCount; i++) {
-                    starPos[i*3] += vel[i*3] * 0.05;
-                    starPos[i*3+1] += vel[i*3+1] * 0.05;
-                    starPos[i*3+2] += vel[i*3+2] * 0.05;
+                    starPos[i*3] += vel[i*3] * 0.08;
+                    starPos[i*3+1] += vel[i*3+1] * 0.08;
+                    starPos[i*3+2] += vel[i*3+2] * 0.08;
                 }
                 starSystem.geometry.attributes.position.needsUpdate = true;
-                if(frame > 20 && orbGroup.position.z < 50) {
-                    orbGroup.position.z += 4; 
-                    const s = Math.min(4, orbGroup.scale.x * 1.15);
+                if(frame > 20 && orbGroup.position.z < 20) {
+                    orbGroup.position.z += 8; 
+                    const s = Math.min(3.5, orbGroup.scale.x * 1.2);
                     orbGroup.scale.set(s,s,s);
-                    core.material.opacity = 0.8;
-                    shell.material.opacity = 1;
+                    glass.material.opacity = 0.45;
+                    heart.material.opacity = 1;
+                    shine.material.opacity = 0.3; // That polished sheen
                 }
-                if(frame < 200) requestAnimationFrame(explode);
+                if(frame < 220) requestAnimationFrame(explode);
                 else document.getElementById('zodiac-name').style.opacity = "1";
             };
             explode();
@@ -141,7 +169,8 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            orbGroup.rotation.y += 0.01;
+            orbGroup.rotation.y += 0.005;
+            heart.rotation.x += 0.015;
             renderer.render(scene, camera);
         }
         animate();
