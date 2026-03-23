@@ -2,14 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries Reset v21</title>
+    <title>KOC | Aries Reset v22</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
         #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-size: 18px; letter-spacing: 2px; z-index: 10; }
         .floating-word { position: absolute; color: #ff3300; font-weight: bold; white-space: nowrap; pointer-events: auto; text-shadow: 0 0 10px #ff0000; will-change: transform; }
-        #ui-layer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; text-align: center; pointer-events: none; z-index: 5; }
-        #zodiac-name { color: #ff4500; font-size: 40px; letter-spacing: 30px; opacity: 0; margin-top: 450px; transition: opacity 3s; }
+        #ui-layer { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            pointer-events: none; z-index: 5; 
+        }
+        #zodiac-name { 
+            color: #ff4500; font-size: 60px; letter-spacing: 40px; opacity: 0; 
+            margin-top: 500px; transition: opacity 4s; text-align: center;
+            text-shadow: 0 0 20px #ff0000;
+        }
     </style>
 </head>
 <body>
@@ -22,141 +30,134 @@
         const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "ELEVATOR MUSIC", "REFERRALS", "FLAPPIN' GOWN", "BARIUM DRINK", "SUGAR", "CHAULKY", "FRONT DESK", "THEREPY", "PRIOR AUTH", "bedpan"];
         
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 3000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 4000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // --- BRIGHTER GALAXY ENGINE ---
-        const starCount = 15000;
+        // --- GALAXY (30k Points) ---
+        const starCount = 30000;
         const starGeo = new THREE.BufferGeometry();
-        const positions = new Float32Array(starCount * 3);
-        const velocities = new Float32Array(starCount * 3);
+        const pos = new Float32Array(starCount * 3);
+        const vel = new Float32Array(starCount * 3);
         for(let i=0; i<starCount; i++) {
-            positions[i*3] = (Math.random() - 0.5) * 10;
-            positions[i*3+1] = (Math.random() - 0.5) * 10;
-            positions[i*3+2] = (Math.random() - 0.5) * 10;
-            velocities[i*3] = positions[i*3] * 12;
-            velocities[i*3+1] = positions[i*3+1] * 12;
-            velocities[i*3+2] = positions[i*3+2] * 12;
+            pos[i*3] = (Math.random() - 0.5) * 15;
+            pos[i*3+1] = (Math.random() - 0.5) * 15;
+            pos[i*3+2] = (Math.random() - 0.5) * 15;
+            vel[i*3] = pos[i*3] * 18;
+            vel[i*3+1] = pos[i*3+1] * 18;
+            vel[i*3+2] = pos[i*3+2] * 18;
         }
-        starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.08, color: 0xffffff, transparent: true, opacity: 0 });
+        starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        const starMat = new THREE.PointsMaterial({ size: 0.06, color: 0xffffff, transparent: true, opacity: 0 });
         const starSystem = new THREE.Points(starGeo, starMat);
         scene.add(starSystem);
 
-        // --- THE SHINY GLASS ORB ---
+        // --- THE ETCHED GLASS ORB ---
         const orbGroup = new THREE.Group();
         const glassOrb = new THREE.Mesh(
             new THREE.SphereGeometry(4, 64, 64),
             new THREE.MeshPhongMaterial({ 
-                color: 0x220500, emissive: 0xff4500, emissiveIntensity: 0.5,
-                transparent: true, opacity: 0, shininess: 100, reflectivity: 1
+                color: 0x441100, emissive: 0xff4500, emissiveIntensity: 0.3,
+                transparent: true, opacity: 0, shininess: 100
             })
         );
         orbGroup.add(glassOrb);
         
-        // Etched Constellation inside
+        // The "Etched" Constellation Core
         const core = new THREE.Mesh(
-            new THREE.IcosahedronGeometry(2, 2),
+            new THREE.IcosahedronGeometry(2.5, 1),
             new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true, transparent: true, opacity: 0 })
         );
         orbGroup.add(core);
-        orbGroup.position.z = -100; // Start deep in space
+        orbGroup.position.z = -200; 
         orbGroup.scale.set(0.1, 0.1, 0.1);
         scene.add(orbGroup);
 
-        const light = new THREE.PointLight(0xffffff, 0, 100);
-        light.position.set(20, 20, 20);
+        const light = new THREE.PointLight(0xffffff, 0, 200);
+        light.position.set(20, 20, 50);
         scene.add(light);
-        camera.position.z = 20;
+        camera.position.z = 25;
 
         function createWord() {
+            if(ritualComplete && activeWords.length > 50) return;
             const word = document.createElement('div');
             word.className = 'floating-word';
             word.innerText = wordList[Math.floor(Math.random() * wordList.length)];
             const depth = Math.random();
-            word.style.fontSize = (15 + depth * 30) + "px";
-            word.style.opacity = 0.4 + depth * 0.6;
-            
+            word.style.fontSize = (16 + depth * 30) + "px";
+            word.style.opacity = 0.5 + depth * 0.5;
             const edge = Math.floor(Math.random() * 4);
             let x, y, dx = 0, dy = 0;
-            const speed = 1.5 + Math.random() * 4;
-
-            if(edge === 0) { x = -400; y = Math.random() * window.innerHeight; dx = speed; } 
-            else if(edge === 1) { x = window.innerWidth + 400; y = Math.random() * window.innerHeight; dx = -speed; } 
-            else if(edge === 2) { x = Math.random() * window.innerWidth; y = -100; dy = speed; } 
-            else { x = Math.random() * window.innerWidth; y = window.innerHeight + 100; dy = -speed; } 
-
+            const speed = 2.5 + Math.random() * 5;
+            if(edge === 0) { x = -450; y = Math.random() * window.innerHeight; dx = speed; } 
+            else if(edge === 1) { x = window.innerWidth + 450; y = Math.random() * window.innerHeight; dx = -speed; } 
+            else if(edge === 2) { x = Math.random() * window.innerWidth; y = -150; dy = speed; } 
+            else { x = Math.random() * window.innerWidth; y = window.innerHeight + 150; dy = -speed; } 
             word.style.left = x + "px"; word.style.top = y + "px";
             document.body.appendChild(word);
-            const wObj = { element: word, x, y, dx, dy, rotation: 0, sucking: false };
-            activeWords.push(wObj);
-
+            activeWords.push({ element: word, x, y, dx, dy, sucking: false });
             word.onmouseover = () => {
-                if(wObj.sucking) return;
+                if(ritualComplete) return;
                 zapCount++;
                 document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${zapCount}/30`;
                 if(zapCount === 30) startTheFlush();
                 word.innerText = "💥";
-                setTimeout(() => { word.remove(); activeWords = activeWords.filter(w => w !== wObj); }, 100);
+                setTimeout(() => { word.remove(); }, 100);
             };
         }
 
         for(let i=0; i<15; i++) createWord();
-        setInterval(() => { if(activeWords.length < 20) createWord(); }, 1000);
+        setInterval(() => { if(!ritualComplete) createWord(); }, 800);
 
         function startTheFlush() {
             ritualComplete = true;
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-            
             activeWords.forEach(w => w.sucking = true);
             
             let flushTimer = setInterval(() => {
                 activeWords.forEach((w, index) => {
                     const dX = centerX - w.x; const dY = centerY - w.y;
                     const dist = Math.sqrt(dX*dX + dY*dY);
-                    w.x += dX * 0.15 + (dY * 0.25); w.y += dY * 0.15 - (dX * 0.25);
+                    w.x += dX * 0.25 + (dY * 0.35); w.y += dY * 0.25 - (dX * 0.35);
                     w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
-                    w.element.style.transform = `scale(${dist/300}) rotate(${dist}deg)`;
-                    if(dist < 30) { w.element.remove(); activeWords.splice(index, 1); }
+                    w.element.style.transform = `scale(${dist/350}) rotate(${dist*2}deg)`;
+                    if(dist < 40) { w.element.remove(); activeWords.splice(index, 1); }
                 });
-                if(activeWords.length === 0) { clearInterval(flushTimer); setTimeout(bigBang, 3000); }
+                if(activeWords.length === 0) { clearInterval(flushTimer); setTimeout(bigBang, 2000); }
             }, 16);
+            // Safety trigger: if words are stuck, bang anyway in 5 secs
+            setTimeout(() => { if(ritualComplete) bigBang(); }, 5000);
         }
 
         function bigBang() {
             document.getElementById('counter').style.display = 'none';
             starMat.opacity = 1;
-            const pos = starSystem.geometry.attributes.position.array;
+            const starPos = starSystem.geometry.attributes.position.array;
             let frame = 0;
-
             const explode = () => {
                 frame++;
                 for(let i=0; i<starCount; i++) {
-                    pos[i*3] += velocities[i*3] * 0.05;
-                    pos[i*3+1] += velocities[i*3+1] * 0.05;
-                    pos[i*3+2] += velocities[i*3+2] * 0.05;
+                    starPos[i*3] += vel[i*3] * 0.03;
+                    starPos[i*3+1] += vel[i*3+1] * 0.03;
+                    starPos[i*3+2] += vel[i*3+2] * 0.03;
                 }
                 starSystem.geometry.attributes.position.needsUpdate = true;
-                
-                // ORB TRAVELS FORWARD
                 if(frame > 10 && orbGroup.position.z < 0) {
-                    orbGroup.position.z += 1.5;
-                    const s = orbGroup.scale.x + 0.015;
-                    if(s < 1) orbGroup.scale.set(s,s,s);
+                    orbGroup.position.z += 3; 
+                    const s = orbGroup.scale.x * 1.08;
+                    if(s < 1.2) orbGroup.scale.set(s,s,s);
                     glassOrb.material.opacity = Math.min(s, 0.8);
                     core.material.opacity = s;
-                    light.intensity = s * 5;
+                    light.intensity = s * 6;
                 }
-
-                if(frame < 250) requestAnimationFrame(explode);
+                if(frame < 220) requestAnimationFrame(explode);
                 else document.getElementById('zodiac-name').style.opacity = "1";
             };
             explode();
             renderer.setClearColor(0xffffff, 1);
-            setTimeout(() => renderer.setClearColor(0x000000, 1), 100);
+            setTimeout(() => renderer.setClearColor(0x000000, 1), 120);
         }
 
         function animate() {
@@ -164,8 +165,8 @@
             activeWords.forEach(w => {
                 if(!w.sucking) { w.x += w.dx; w.y += w.dy; w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px"; }
             });
-            orbGroup.rotation.y += 0.005;
-            core.rotation.x += 0.01;
+            orbGroup.rotation.y += 0.006;
+            core.rotation.x += 0.015;
             renderer.render(scene, camera);
         }
         animate();
