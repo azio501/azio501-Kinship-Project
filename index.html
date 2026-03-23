@@ -1,8 +1,8 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries Reset v33</title>
+    <title>KOC | Aries Reset v34</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
@@ -10,24 +10,13 @@
         .floating-word { position: absolute; color: #ff3300; font-weight: bold; white-space: nowrap; pointer-events: auto; text-shadow: 0 0 10px #ff0000; }
         
         #ui-layer { 
-            position: absolute; 
-            bottom: 12%; 
-            left: 0;
-            width: 100%; 
-            display: flex;
-            justify-content: center;
-            pointer-events: none; 
-            z-index: 5; 
+            position: absolute; bottom: 12%; left: 0; width: 100%; 
+            display: flex; justify-content: center; pointer-events: none; z-index: 5; 
         }
         #zodiac-name { 
-            color: #cc8800; 
-            font-size: 16px; 
-            letter-spacing: 45px; 
-            opacity: 0; 
-            transition: opacity 4s; 
-            text-shadow: 0 0 10px #aa4400;
-            text-indent: 45px;
-            text-align: center;
+            color: #ffaa00; font-size: 16px; letter-spacing: 40px; opacity: 0; 
+            transition: opacity 4s; text-shadow: 0 0 15px #ff4500;
+            text-align: center; margin-left: 40px; /* Counter-balance for letter-spacing */
         }
     </style>
 </head>
@@ -42,73 +31,62 @@
         
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 5000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
         // Stars
         const starGeo = new THREE.BufferGeometry();
-        const starCount = 35000;
+        const starCount = 30000;
         const pos = new Float32Array(starCount * 3);
         const vel = new Float32Array(starCount * 3);
         for(let i=0; i<starCount; i++) {
-            pos[i*3] = (Math.random() - 0.5) * 12;
-            pos[i*3+1] = (Math.random() - 0.5) * 12;
-            pos[i*3+2] = (Math.random() - 0.5) * 12;
-            vel[i*3] = pos[i*3] * 50;
-            vel[i*3+1] = pos[i*3+1] * 50;
-            vel[i*3+2] = pos[i*3+2] * 50;
+            pos[i*3] = (Math.random() - 0.5) * 15;
+            pos[i*3+1] = (Math.random() - 0.5) * 15;
+            pos[i*3+2] = (Math.random() - 0.5) * 15;
+            vel[i*3] = pos[i*3] * 45;
+            vel[i*3+1] = pos[i*3+1] * 45;
+            vel[i*3+2] = pos[i*3+2] * 45;
         }
         starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
         const starMat = new THREE.PointsMaterial({ size: 0.03, color: 0xffffff, transparent: true, opacity: 0 });
         const starSystem = new THREE.Points(starGeo, starMat);
         scene.add(starSystem);
 
-        // --- HEAVY GLASS ORB (Trial 33: Polish) ---
+        // --- THE ORB (Standard Material for Visibility) ---
         const orbGroup = new THREE.Group();
+        
+        // Main Body
         const glassOrb = new THREE.Mesh(
             new THREE.SphereGeometry(12, 64, 64),
-            new THREE.MeshPhysicalMaterial({
-                color: 0xffffff,
-                metalness: 0.05,
-                roughness: 0, 
-                transmission: 1.0, 
-                thickness: 15, 
-                ior: 1.7,      
-                transparent: true, 
-                opacity: 0,
-                clearcoat: 1.0, // High-gloss finish
-                clearcoatRoughness: 0,
-                reflectivity: 1.0,
-                sheen: 1.0,
-                sheenColor: 0xffffff
+            new THREE.MeshStandardMaterial({
+                color: 0x222222, metalness: 0.9, roughness: 0.1,
+                transparent: true, opacity: 0
             })
         );
-        orbGroup.add(glassOrb);
         
+        // Outer Shine (The Highlight)
+        const shineLayer = new THREE.Mesh(
+            new THREE.SphereGeometry(12.1, 64, 64),
+            new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, side: THREE.BackSide })
+        );
+
         const core = new THREE.Mesh(
             new THREE.IcosahedronGeometry(7, 1),
             new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true, transparent: true, opacity: 0 })
         );
+        
+        orbGroup.add(glassOrb);
+        orbGroup.add(shineLayer);
         orbGroup.add(core);
-        orbGroup.position.z = -400; 
+        orbGroup.position.z = -300; 
         orbGroup.scale.set(0.1, 0.1, 0.1);
         scene.add(orbGroup);
 
-        // --- TRIAL 33: POLISH LIGHTING ---
-        // 1. Key Light (Creates primary shine)
-        const keyLight = new THREE.PointLight(0xffffff, 6, 1500);
-        keyLight.position.set(100, 100, 150);
-        scene.add(keyLight);
-
-        // 2. Rim Light (Creates edge polish and define shape)
-        const rimLight = new THREE.PointLight(0xffffff, 4, 1000);
-        rimLight.position.set(-100, 100, 50);
-        scene.add(rimLight);
-
-        // 3. Fill Light (Soft ambiance)
-        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+        const light = new THREE.PointLight(0xffffff, 5, 1000);
+        light.position.set(50, 50, 100);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
         camera.position.z = 60;
 
@@ -158,12 +136,12 @@
                     activeWords.forEach((w, index) => {
                         const dX = centerX - w.x; const dY = centerY - w.y;
                         const dist = Math.sqrt(dX*dX + dY*dY);
-                        w.x += dX * 0.35 + (dY * 0.45); w.y += dY * 0.35 - (dX * 0.45);
+                        w.x += dX * 0.4 + (dY * 0.5); w.y += dY * 0.4 - (dX * 0.5);
                         w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
                         w.element.style.transform = `scale(${dist/350})`;
                         if(dist < 50) { w.element.remove(); activeWords.splice(index, 1); }
                     });
-                    if(activeWords.length === 0) { clearInterval(flushTimer); setTimeout(bigBang, 2000); }
+                    if(activeWords.length === 0) { clearInterval(flushTimer); setTimeout(bigBang, 1500); }
                 }, 16);
             }, 600);
         }
@@ -177,16 +155,18 @@
             const explode = () => {
                 frame++;
                 for(let i=0; i<starCount; i++) {
-                    starPos[i*3] += vel[i*3] * 0.06;
-                    starPos[i*3+1] += vel[i*3+1] * 0.06;
-                    starPos[i*3+2] += vel[i*3+2] * 0.06;
+                    starPos[i*3] += vel[i*3] * 0.08;
+                    starPos[i*3+1] += vel[i*3+1] * 0.08;
+                    starPos[i*3+2] += vel[i*3+2] * 0.08;
                 }
                 starSystem.geometry.attributes.position.needsUpdate = true;
                 if(frame > 10 && orbGroup.position.z < 0) {
                     orbGroup.position.z += 8; 
-                    const s = Math.min(2.8, orbGroup.scale.x * 1.12);
+                    const s = Math.min(2.5, orbGroup.scale.x * 1.1);
                     orbGroup.scale.set(s,s,s);
-                    glassOrb.material.opacity = 0.6; core.material.opacity = 1;
+                    glassOrb.material.opacity = 0.5; 
+                    shineLayer.material.opacity = 0.2; // The cool shine
+                    core.material.opacity = 1;
                 }
                 if(frame < 250) requestAnimationFrame(explode);
                 else document.getElementById('zodiac-name').style.opacity = "1";
@@ -201,10 +181,10 @@
             activeWords.forEach(w => {
                 if(!w.sucking) { w.x += w.dx; w.y += w.dy; w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px"; }
             });
-            orbGroup.rotation.y += 0.006;
+            orbGroup.rotation.y += 0.005;
             renderer.render(scene, camera);
         }
         animate();
     </script>
 </body>
-</html>
+</html> 
