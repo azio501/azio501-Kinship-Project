@@ -2,180 +2,173 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries Reset</title>
+    <title>KOC | Aries Reset v21</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
         #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-size: 18px; letter-spacing: 2px; z-index: 10; }
-        .floating-word { 
-            position: absolute; color: #ff3300; font-weight: bold; 
-            white-space: nowrap; pointer-events: auto; text-shadow: 0 0 10px #ff0000;
-        }
-        #ui-layer { 
-            position: absolute; bottom: 10%; width: 100%; text-align: center; 
-            color: #ff4500; font-size: 30px; letter-spacing: 25px; 
-            opacity: 0; transition: opacity 2s, transform 2s; pointer-events: none;
-        }
+        .floating-word { position: absolute; color: #ff3300; font-weight: bold; white-space: nowrap; pointer-events: auto; text-shadow: 0 0 10px #ff0000; will-change: transform; }
+        #ui-layer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; text-align: center; pointer-events: none; z-index: 5; }
+        #zodiac-name { color: #ff4500; font-size: 40px; letter-spacing: 30px; opacity: 0; margin-top: 450px; transition: opacity 3s; }
     </style>
 </head>
 <body>
 
     <div id="counter">BUREAUCRACY_EXPUNGED: 0/30</div>
-    <div id="ui-layer">ARIES</div>
+    <div id="ui-layer"><div id="zodiac-name">ARIES</div></div>
 
     <script>
-        let zapCount = 0;
-        let ritualComplete = false;
-        let activeWords = [];
-        const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "ELEVATOR MUSIC", "REFERRALS", "FLAPPIN' GOWN", "BARIUM DRINK", "SUGAR", "CHAULKY", "FRONT DESK", "THEREPY", "PRIOR AUTH"];
+        let zapCount = 0, ritualComplete = false, activeWords = [];
+        const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "ELEVATOR MUSIC", "REFERRALS", "FLAPPIN' GOWN", "BARIUM DRINK", "SUGAR", "CHAULKY", "FRONT DESK", "THEREPY", "PRIOR AUTH", "bedpan"];
         
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 3000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // BRIGHTER GALAXY
+        // --- BRIGHTER GALAXY ENGINE ---
+        const starCount = 15000;
         const starGeo = new THREE.BufferGeometry();
-        const starCount = 20000;
-        const starPos = new Float32Array(starCount * 3);
-        const starVelo = new Float32Array(starCount * 3);
+        const positions = new Float32Array(starCount * 3);
+        const velocities = new Float32Array(starCount * 3);
         for(let i=0; i<starCount; i++) {
-            starPos[i*3] = (Math.random() - 0.5) * 5; 
-            starPos[i*3+1] = (Math.random() - 0.5) * 5;
-            starPos[i*3+2] = (Math.random() - 0.5) * 5;
-            starVelo[i*3] = starPos[i*3] * (Math.random() * 5);
-            starVelo[i*3+1] = starPos[i*3+1] * (Math.random() * 5);
-            starVelo[i*3+2] = starPos[i*3+2] * (Math.random() * 5);
+            positions[i*3] = (Math.random() - 0.5) * 10;
+            positions[i*3+1] = (Math.random() - 0.5) * 10;
+            positions[i*3+2] = (Math.random() - 0.5) * 10;
+            velocities[i*3] = positions[i*3] * 12;
+            velocities[i*3+1] = positions[i*3+1] * 12;
+            velocities[i*3+2] = positions[i*3+2] * 12;
         }
-        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.05, color: 0xffffff, transparent: true, opacity: 0 });
-        const stars = new THREE.Points(starGeo, starMat);
-        scene.add(stars);
+        starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const starMat = new THREE.PointsMaterial({ size: 0.08, color: 0xffffff, transparent: true, opacity: 0 });
+        const starSystem = new THREE.Points(starGeo, starMat);
+        scene.add(starSystem);
 
-        // THE ORB
+        // --- THE SHINY GLASS ORB ---
         const orbGroup = new THREE.Group();
-        const orb = new THREE.Mesh(
+        const glassOrb = new THREE.Mesh(
             new THREE.SphereGeometry(4, 64, 64),
-            new THREE.MeshPhongMaterial({ color: 0x150000, transparent: true, opacity: 0, emissive: 0xff4500, emissiveIntensity: 1 })
+            new THREE.MeshPhongMaterial({ 
+                color: 0x220500, emissive: 0xff4500, emissiveIntensity: 0.5,
+                transparent: true, opacity: 0, shininess: 100, reflectivity: 1
+            })
         );
-        orbGroup.add(orb);
-        orbGroup.scale.set(0.001, 0.001, 0.001);
-        scene.add(orbGroup);
+        orbGroup.add(glassOrb);
         
-        const light = new THREE.PointLight(0xffffff, 0, 100);
-        light.position.set(10,10,10);
-        scene.add(light);
-        camera.position.z = 15;
+        // Etched Constellation inside
+        const core = new THREE.Mesh(
+            new THREE.IcosahedronGeometry(2, 2),
+            new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true, transparent: true, opacity: 0 })
+        );
+        orbGroup.add(core);
+        orbGroup.position.z = -100; // Start deep in space
+        orbGroup.scale.set(0.1, 0.1, 0.1);
+        scene.add(orbGroup);
 
-        function createWord(isFrenzy = false) {
-            if(!isFrenzy && (zapCount >= 30 || ritualComplete)) return;
+        const light = new THREE.PointLight(0xffffff, 0, 100);
+        light.position.set(20, 20, 20);
+        scene.add(light);
+        camera.position.z = 20;
+
+        function createWord() {
             const word = document.createElement('div');
             word.className = 'floating-word';
-            const pick = Math.random();
-            word.innerText = (pick > 0.96) ? "bedpan" : wordList[Math.floor(Math.random() * wordList.length)];
-            
-            const depth = Math.random(); 
-            word.style.fontSize = (14 + depth * 30) + "px";
-            word.style.opacity = 0.5 + depth * 0.5;
+            word.innerText = wordList[Math.floor(Math.random() * wordList.length)];
+            const depth = Math.random();
+            word.style.fontSize = (15 + depth * 30) + "px";
+            word.style.opacity = 0.4 + depth * 0.6;
             
             const edge = Math.floor(Math.random() * 4);
             let x, y, dx = 0, dy = 0;
-            const speed = (2 + Math.random() * 5) * (isFrenzy ? 4 : 1);
+            const speed = 1.5 + Math.random() * 4;
 
             if(edge === 0) { x = -400; y = Math.random() * window.innerHeight; dx = speed; } 
             else if(edge === 1) { x = window.innerWidth + 400; y = Math.random() * window.innerHeight; dx = -speed; } 
-            else if(edge === 2) { x = Math.random() * window.innerWidth; y = -150; dy = speed; } 
-            else { x = Math.random() * window.innerWidth; y = window.innerHeight + 150; dy = -speed; } 
+            else if(edge === 2) { x = Math.random() * window.innerWidth; y = -100; dy = speed; } 
+            else { x = Math.random() * window.innerWidth; y = window.innerHeight + 100; dy = -speed; } 
 
-            word.style.left = x + "px";
-            word.style.top = y + "px";
+            word.style.left = x + "px"; word.style.top = y + "px";
             document.body.appendChild(word);
-            activeWords.push({ element: word, x, y, dx, dy, rotation: Math.random() * 360 });
+            const wObj = { element: word, x, y, dx, dy, rotation: 0, sucking: false };
+            activeWords.push(wObj);
 
             word.onmouseover = () => {
-                if(ritualComplete) return;
+                if(wObj.sucking) return;
                 zapCount++;
                 document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${zapCount}/30`;
-                word.innerText = "💥";
-                setTimeout(() => { word.remove(); }, 80);
                 if(zapCount === 30) startTheFlush();
-                else createWord();
+                word.innerText = "💥";
+                setTimeout(() => { word.remove(); activeWords = activeWords.filter(w => w !== wObj); }, 100);
             };
         }
 
         for(let i=0; i<15; i++) createWord();
+        setInterval(() => { if(activeWords.length < 20) createWord(); }, 1000);
 
         function startTheFlush() {
             ritualComplete = true;
-            const frenzy = setInterval(() => { for(let i=0; i<6; i++) createWord(true); }, 50);
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
             
-            setTimeout(() => {
-                clearInterval(frenzy);
-                const centerX = window.innerWidth / 2;
-                const centerY = window.innerHeight / 2;
-                let flush = setInterval(() => {
-                    activeWords.forEach((w, index) => {
-                        const dX = centerX - w.x; const dY = centerY - w.y;
-                        const dist = Math.sqrt(dX*dX + dY*dY);
-                        w.x += dX * 0.2 + (dY * 0.3); w.y += dY * 0.2 - (dX * 0.3);
-                        w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
-                        w.element.style.transform = `scale(${dist/300}) rotate(${dist}deg)`;
-                        if(dist < 20) { w.element.remove(); activeWords.splice(index, 1); }
-                    });
-                    if(activeWords.length === 0) { clearInterval(flush); setTimeout(bigBang, 1500); }
-                }, 16);
-            }, 2000);
+            activeWords.forEach(w => w.sucking = true);
+            
+            let flushTimer = setInterval(() => {
+                activeWords.forEach((w, index) => {
+                    const dX = centerX - w.x; const dY = centerY - w.y;
+                    const dist = Math.sqrt(dX*dX + dY*dY);
+                    w.x += dX * 0.15 + (dY * 0.25); w.y += dY * 0.15 - (dX * 0.25);
+                    w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
+                    w.element.style.transform = `scale(${dist/300}) rotate(${dist}deg)`;
+                    if(dist < 30) { w.element.remove(); activeWords.splice(index, 1); }
+                });
+                if(activeWords.length === 0) { clearInterval(flushTimer); setTimeout(bigBang, 3000); }
+            }, 16);
         }
 
         function bigBang() {
             document.getElementById('counter').style.display = 'none';
             starMat.opacity = 1;
-            const pos = stars.geometry.attributes.position.array;
+            const pos = starSystem.geometry.attributes.position.array;
             let frame = 0;
+
             const explode = () => {
                 frame++;
                 for(let i=0; i<starCount; i++) {
-                    pos[i*3] += starVelo[i*3] * (frame * 0.1);
-                    pos[i*3+1] += starVelo[i*3+1] * (frame * 0.1);
-                    pos[i*3+2] += starVelo[i*3+2] * (frame * 0.1);
+                    pos[i*3] += velocities[i*3] * 0.05;
+                    pos[i*3+1] += velocities[i*3+1] * 0.05;
+                    pos[i*3+2] += velocities[i*3+2] * 0.05;
                 }
-                stars.geometry.attributes.position.needsUpdate = true;
+                starSystem.geometry.attributes.position.needsUpdate = true;
                 
-                if(frame > 20 && orbGroup.scale.x < 1) {
-                    const s = orbGroup.scale.x * 1.15 + 0.01;
-                    orbGroup.scale.set(s,s,s);
-                    orb.material.opacity = Math.min(s, 0.8);
-                    light.intensity = s * 4;
+                // ORB TRAVELS FORWARD
+                if(frame > 10 && orbGroup.position.z < 0) {
+                    orbGroup.position.z += 1.5;
+                    const s = orbGroup.scale.x + 0.015;
+                    if(s < 1) orbGroup.scale.set(s,s,s);
+                    glassOrb.material.opacity = Math.min(s, 0.8);
+                    core.material.opacity = s;
+                    light.intensity = s * 5;
                 }
-                if(frame < 180) requestAnimationFrame(explode);
-                else {
-                    document.getElementById('ui-layer').style.opacity = "1";
-                    document.getElementById('ui-layer').style.transform = "translateY(-20px)";
-                }
+
+                if(frame < 250) requestAnimationFrame(explode);
+                else document.getElementById('zodiac-name').style.opacity = "1";
             };
             explode();
             renderer.setClearColor(0xffffff, 1);
-            setTimeout(() => { renderer.setClearColor(0x000000, 1); }, 100);
+            setTimeout(() => renderer.setClearColor(0x000000, 1), 100);
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            if(!ritualComplete) {
-                activeWords.forEach(w => {
-                    w.x += w.dx; w.y += w.dy;
-                    w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
-                });
-            }
+            activeWords.forEach(w => {
+                if(!w.sucking) { w.x += w.dx; w.y += w.dy; w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px"; }
+            });
             orbGroup.rotation.y += 0.005;
+            core.rotation.x += 0.01;
             renderer.render(scene, camera);
         }
         animate();
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
     </script>
 </body>
 </html>
