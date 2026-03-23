@@ -2,21 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries Kinetic v38</title>
+    <title>KOC | Aries Kinetic v39</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
-        #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-size: 12px; letter-spacing: 2px; z-index: 10; }
-        .floating-word { position: absolute; color: #ff3300; font-weight: bold; white-space: nowrap; pointer-events: auto; text-shadow: 0 0 8px #ff0000; font-size: 20px; }
+        #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-size: 12px; letter-spacing: 2px; z-index: 100; }
+        .floating-word { 
+            position: fixed; color: #ff3300; font-weight: bold; white-space: nowrap; 
+            pointer-events: auto; text-shadow: 0 0 8px #ff0000; font-size: 22px; 
+            z-index: 50; 
+        }
         
         #ui-layer { 
-            position: absolute; bottom: 5%; left: 0; width: 100%; 
-            display: flex; justify-content: center; pointer-events: none; z-index: 5; 
+            position: fixed; bottom: 30px; left: 0; width: 100%; 
+            display: flex; justify-content: center; pointer-events: none; z-index: 10; 
         }
         #zodiac-name { 
-            color: #ffaa00; font-size: 10px; letter-spacing: 40px; opacity: 0; 
-            transition: opacity 4s; text-shadow: 0 0 5px #ff4500;
-            text-align: center; text-indent: 40px;
+            color: #ffaa00; font-size: 10px; letter-spacing: 50px; opacity: 0; 
+            transition: opacity 5s; text-shadow: 0 0 5px #ff4500;
+            text-align: center; text-indent: 50px;
         }
     </style>
 </head>
@@ -35,32 +39,32 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Star Field
+        // Stars
         const starGeo = new THREE.BufferGeometry();
         const starCount = 20000;
         const pos = new Float32Array(starCount * 3);
         const vel = new Float32Array(starCount * 3);
         for(let i=0; i<starCount; i++) {
-            pos[i*3] = (Math.random() - 0.5) * 25;
-            pos[i*3+1] = (Math.random() - 0.5) * 25;
-            pos[i*3+2] = (Math.random() - 0.5) * 25;
-            vel[i*3] = pos[i*3] * 70;
-            vel[i*3+1] = pos[i*3+1] * 70;
-            vel[i*3+2] = pos[i*3+2] * 70;
+            pos[i*3] = (Math.random() - 0.5) * 30;
+            pos[i*3+1] = (Math.random() - 0.5) * 30;
+            pos[i*3+2] = (Math.random() - 0.5) * 30;
+            vel[i*3] = pos[i*3] * 80;
+            vel[i*3+1] = pos[i*3+1] * 80;
+            vel[i*3+2] = pos[i*3+2] * 80;
         }
         starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const starMat = new THREE.PointsMaterial({ size: 0.03, color: 0xffffff, transparent: true, opacity: 0 });
+        const starMat = new THREE.PointsMaterial({ size: 0.04, color: 0xffffff, transparent: true, opacity: 0 });
         const starSystem = new THREE.Points(starGeo, starMat);
         scene.add(starSystem);
 
-        // --- ORB ---
+        // --- THE ORB ---
         const orbGroup = new THREE.Group();
         const glass = new THREE.Mesh(
             new THREE.SphereGeometry(10, 64, 64),
-            new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.05, transparent: true, opacity: 0 })
+            new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 1, roughness: 0.1, transparent: true, opacity: 0 })
         );
         const heart = new THREE.Mesh(
-            new THREE.IcosahedronGeometry(6, 1),
+            new THREE.IcosahedronGeometry(7, 1),
             new THREE.MeshBasicMaterial({ color: 0xffaa00, wireframe: true, transparent: true, opacity: 0 })
         );
         const shine = new THREE.Mesh(
@@ -68,13 +72,13 @@
             new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, side: THREE.BackSide })
         );
         orbGroup.add(glass, heart, shine);
-        orbGroup.position.z = -350; 
+        orbGroup.position.z = -400; 
         orbGroup.scale.set(0.1, 0.1, 0.1);
         scene.add(orbGroup);
 
-        scene.add(new THREE.PointLight(0xffffff, 8, 1000).set(60, 60, 100));
+        scene.add(new THREE.PointLight(0xffffff, 10, 2000).set(100, 100, 200));
         scene.add(new THREE.AmbientLight(0xffffff, 0.2));
-        camera.position.z = 100;
+        camera.position.z = 120;
 
         function createWord() {
             if(ritualComplete) return;
@@ -82,12 +86,10 @@
             word.className = 'floating-word';
             word.innerText = wordList[Math.floor(Math.random() * wordList.length)];
             
-            let x, y, dx, dy;
-            const side = Math.floor(Math.random() * 4);
-            if(side === 0) { x = -250; y = Math.random()*window.innerHeight; dx = 3+Math.random()*5; dy = (Math.random()-0.5)*3; }
-            else if(side === 1) { x = window.innerWidth+250; y = Math.random()*window.innerHeight; dx = -3-Math.random()*5; dy = (Math.random()-0.5)*3; }
-            else if(side === 2) { x = Math.random()*window.innerWidth; y = -100; dx = (Math.random()-0.5)*3; dy = 3+Math.random()*5; }
-            else { x = Math.random()*window.innerWidth; y = window.innerHeight+100; dx = (Math.random()-0.5)*3; dy = -3-Math.random()*5; }
+            let x = Math.random() * window.innerWidth;
+            let y = Math.random() * window.innerHeight;
+            let dx = (Math.random() - 0.5) * 6;
+            let dy = (Math.random() - 0.5) * 6;
 
             word.style.left = x + "px";
             word.style.top = y + "px";
@@ -104,31 +106,44 @@
                 setTimeout(() => {
                     word.remove();
                     activeWords = activeWords.filter(w => w !== wordObj);
-                }, 100);
+                }, 80);
                 if(zapCount >= 30) startTheFlush();
             };
         }
 
-        let spawnInt = setInterval(() => { if(!ritualComplete) createWord(); }, 700);
+        // Spawn words
+        let spawnInt = setInterval(() => { if(!ritualComplete) createWord(); }, 800);
+
+        // Dedicated Movement Loop (Force constant motion)
+        setInterval(() => {
+            if(ritualComplete) return;
+            activeWords.forEach(w => {
+                w.x += w.dx; w.y += w.dy;
+                w.element.style.left = w.x + "px";
+                w.element.style.top = w.y + "px";
+                if(w.x < -400) w.x = window.innerWidth + 100;
+                if(w.x > window.innerWidth + 400) w.x = -100;
+                if(w.y < -400) w.y = window.innerHeight + 100;
+                if(w.y > window.innerHeight + 400) w.y = -100;
+            });
+        }, 16);
 
         function startTheFlush() {
             ritualComplete = true;
             clearInterval(spawnInt);
-            setTimeout(() => {
-                let flushTimer = setInterval(() => {
-                    activeWords.forEach((w) => {
-                        const dX = (window.innerWidth/2) - w.x; const dY = (window.innerHeight/2) - w.y;
-                        w.x += dX * 0.15; w.y += dY * 0.15;
-                        w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
-                        w.element.style.opacity = Math.abs(dX)/500;
-                        if(Math.abs(dX) < 20) w.element.remove();
-                    });
-                    if(document.querySelectorAll('.floating-word').length === 0) { 
-                        clearInterval(flushTimer); 
-                        bigBang(); 
-                    }
-                }, 16);
-            }, 300);
+            let flushTimer = setInterval(() => {
+                activeWords.forEach((w) => {
+                    const dX = (window.innerWidth/2) - w.x; const dY = (window.innerHeight/2) - w.y;
+                    w.x += dX * 0.1; w.y += dY * 0.1;
+                    w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
+                    w.element.style.opacity = Math.abs(dX)/400;
+                    if(Math.abs(dX) < 20) w.element.remove();
+                });
+                if(document.querySelectorAll('.floating-word').length === 0) { 
+                    clearInterval(flushTimer); 
+                    bigBang(); 
+                }
+            }, 16);
         }
 
         function bigBang() {
@@ -139,16 +154,16 @@
             const explode = () => {
                 frame++;
                 for(let i=0; i<starCount; i++) {
-                    starPos[i*3] += vel[i*3] * 0.08;
-                    starPos[i*3+1] += vel[i*3+1] * 0.08;
-                    starPos[i*3+2] += vel[i*3+2] * 0.08;
+                    starPos[i*3] += vel[i*3] * 0.1;
+                    starPos[i*3+1] += vel[i*3+1] * 0.1;
+                    starPos[i*3+2] += vel[i*3+2] * 0.1;
                 }
                 starSystem.geometry.attributes.position.needsUpdate = true;
-                if(frame > 20 && orbGroup.position.z < 40) {
-                    orbGroup.position.z += 10; 
-                    const s = Math.min(4.5, orbGroup.scale.x * 1.3);
+                if(frame > 15 && orbGroup.position.z < 50) {
+                    orbGroup.position.z += 12; 
+                    const s = Math.min(5.0, orbGroup.scale.x * 1.35);
                     orbGroup.scale.set(s,s,s);
-                    glass.material.opacity = 0.6; heart.material.opacity = 1; shine.material.opacity = 0.4;
+                    glass.material.opacity = 0.6; heart.material.opacity = 1; shine.material.opacity = 0.5;
                 }
                 if(frame < 250) requestAnimationFrame(explode);
                 else document.getElementById('zodiac-name').style.opacity = "1";
@@ -158,22 +173,4 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            if(!ritualComplete) {
-                activeWords.forEach(w => {
-                    w.x += w.dx; w.y += w.dy;
-                    w.element.style.left = w.x + "px"; w.element.style.top = w.y + "px";
-                    // Screen Wrap
-                    if(w.x < -300) w.x = window.innerWidth + 200;
-                    if(w.x > window.innerWidth + 300) w.x = -200;
-                    if(w.y < -300) w.y = window.innerHeight + 200;
-                    if(w.y > window.innerHeight + 300) w.y = -200;
-                });
-            }
             orbGroup.rotation.y += 0.005;
-            heart.rotation.x += 0.01;
-            renderer.render(scene, camera);
-        }
-        animate();
-    </script>
-</body>
-</html>
