@@ -2,17 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries v66 Static Orb</title>
+    <title>KOC | Aries v67 Deep Space</title>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
         
-        /* THE GALAXY */
-        #starfield {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #001 0%, #000 100%);
-            z-index: 1;
-        }
-
         #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-weight: bold; z-index: 100; letter-spacing: 2px; }
 
         .word {
@@ -23,36 +16,34 @@
 
         #blackout { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; z-index: 1000; }
 
-        /* THE ORB REVEAL - Trimmed (Cropped) into a Sphere */
+        /* THE ORB - Blended into the Universe */
         #final-reveal { 
-            position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            /* Standardizing size and shape */
-            width: 500px; height: 500px; border-radius: 50%; 
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            width: 80vh; height: 80vh; /* Scaled to the screen height */
             display: flex; align-items: center; justify-content: center;
-            transition: transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transition: transform 2s ease-out; 
             z-index: 1100;
-            overflow: hidden; /* This is what "trims" the rectangle into a circle */
-            box-shadow: 0 0 80px rgba(255,100,0,0.3);
         }
 
         #zodiac-img { 
-            width: 100%; height: 100%; object-fit: cover; /* Forces image to fill the sphere */
-            /* Removed spinning animation */
+            width: 100%; height: 100%; object-fit: contain;
+            /* This blur/shadow blends the square edges into the black background */
+            filter: drop-shadow(0 0 40px #000) contrast(1.1);
+            border-radius: 50%;
         }
 
         #zodiac-name {
-            position: fixed; bottom: 80px; width: 100%; text-align: center;
-            color: #ffaa00; font-size: 56px; letter-spacing: 75px; text-indent: 75px;
-            opacity: 0; font-weight: bold; transition: opacity 3s; z-index: 1200;
+            position: fixed; bottom: 5vh; width: 100%; text-align: center;
+            color: #ffaa00; font-size: 6vw; letter-spacing: 5vw; text-indent: 5vw;
+            opacity: 0; font-weight: bold; transition: opacity 4s; z-index: 1200;
         }
 
-        .streak { position: absolute; background: #fff; width: 2px; height: 180px; z-index: 1050; }
+        .streak { position: absolute; background: #fff; width: 2px; height: 250px; z-index: 1050; }
     </style>
 </head>
 <body>
 
-    <div id="starfield"></div>
-    <div id="counter">BUREAUCRACY_EXPUNGED: 0/30</div>
+    <div id="counter">SYSTEM_CLEANSE: 0/30</div>
     <div id="blackout"></div>
     
     <div id="final-reveal">
@@ -64,23 +55,26 @@
     <script>
         let count = 0;
         let done = false;
-        // Low constant speed
-        const currentVelocity = 1.0; 
-        const list = ["WAITING ROOMS", "INSURANCE", "COPAY", "PAPERWORK", "REFERRALS", "MEDICARE", "PRIOR AUTH", "CT scan"];
+        const list = ["WAITING ROOMS", "INSURANCE", "COPAY", "PAPERWORK", "REFERRALS", "MEDICARE", "PRIOR AUTH", "PET SCAN"];
         let active = [];
 
-        function spawn(x, y) {
+        function spawn() {
             if(done) return;
             const el = document.createElement('div');
             el.className = 'word';
             el.innerText = list[Math.floor(Math.random() * list.length)];
             
-            let sx = x ?? (Math.random() * 70 + 15);
-            let sy = y ?? (Math.random() * 70 + 15);
+            // Spawn them around the edges so they drift IN
+            const side = Math.floor(Math.random() * 4);
+            let sx, sy;
+            if(side === 0) { sx = -10; sy = Math.random() * 100; }
+            else if(side === 1) { sx = 110; sy = Math.random() * 100; }
+            else if(side === 2) { sx = Math.random() * 100; sy = -10; }
+            else { sx = Math.random() * 100; sy = 110; }
             
-            // Constant drift speed
-            let dx = (Math.random() - 0.5) * currentVelocity;
-            let dy = (Math.random() - 0.5) * currentVelocity;
+            // Drift towards the center
+            let dx = (50 - sx) * 0.02;
+            let dy = (50 - sy) * 0.02;
             
             el.style.left = sx + 'vw'; el.style.top = sy + 'vh';
             document.body.appendChild(el);
@@ -89,37 +83,40 @@
             el.onmouseover = () => {
                 if(done) return;
                 count++;
-                document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${count}/30`;
-                el.remove();
+                document.getElementById('counter').innerText = `SYSTEM_CLEANSE: ${count}/30`;
+                el.style.transform = "scale(0)";
+                setTimeout(() => el.remove(), 100);
                 active = active.filter(i => i !== obj);
                 
                 if(count < 30) {
-                    // Slower build: 1 hit = 2 more words.
-                    spawn(obj.x, obj.y); spawn(obj.x, obj.y);
+                    for(let i=0; i<3; i++) spawn();
                 } else {
-                    finishRitual();
+                    executeReveal();
                 }
             };
             active.push(obj);
         }
 
-        // Start with 2 words
-        spawn(); spawn();
+        // Start the swarm
+        for(let i=0; i<5; i++) spawn();
 
         function update() {
             if(!done) {
                 active.forEach(o => {
                     o.x += o.dx; o.y += o.dy;
-                    if(o.x < -15) o.x = 115; if(o.x > 115) o.x = -15;
-                    if(o.y < -15) o.y = 115; if(o.y > 115) o.y = -15;
                     o.el.style.left = o.x + 'vw'; o.el.style.top = o.y + 'vh';
+                    // If they reach center, they bounce back out
+                    if(Math.abs(o.x - 50) < 5 && Math.abs(o.y - 50) < 5) {
+                        o.dx *= -1.5; o.dy *= -1.5;
+                    }
                 });
+                if(active.length < 10) spawn();
             }
             requestAnimationFrame(update);
         }
         update();
 
-        function finishRitual() {
+        function executeReveal() {
             done = true;
             document.getElementById('blackout').style.display = 'block';
             active.forEach(o => o.el.remove());
@@ -127,8 +124,8 @@
             setTimeout(() => {
                 document.getElementById('blackout').style.display = 'none';
                 
-                // THE BAM
-                for(let i=0; i<80; i++) {
+                // THE BAM - Pure Light
+                for(let i=0; i<100; i++) {
                     const s = document.createElement('div');
                     s.className = 'streak';
                     s.style.left = '50vw'; s.style.top = '50vh';
@@ -137,9 +134,9 @@
                     document.body.appendChild(s);
                     s.animate([
                         { transform: `rotate(${angle}deg) translateY(0)`, opacity: 1 },
-                        { transform: `rotate(${angle}deg) translateY(1000px)`, opacity: 0 }
-                    ], { duration: 700, easing: 'ease-out' });
-                    setTimeout(() => s.remove(), 700);
+                        { transform: `rotate(${angle}deg) translateY(1200px)`, opacity: 0 }
+                    ], { duration: 600, easing: 'ease-out' });
+                    setTimeout(() => s.remove(), 600);
                 }
 
                 document.getElementById('final-reveal').style.transform = 'translate(-50%, -50%) scale(1)';
