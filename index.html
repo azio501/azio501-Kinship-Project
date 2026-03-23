@@ -2,88 +2,82 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Aries v42 Final</title>
+    <title>KOC | Aries v43 Eclipse</title>
     <style>
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; color: #ff3300; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; cursor: crosshair; }
         
-        /* The Counter */
-        #counter { position: absolute; top: 20px; left: 20px; font-size: 12px; letter-spacing: 2px; z-index: 100; color: #ff4500; }
+        #counter { position: absolute; top: 20px; left: 20px; color: #ff4500; font-size: 12px; letter-spacing: 2px; z-index: 100; }
 
-        /* The Drifting Words */
+        /* THE RED WORDS */
         .word {
             position: fixed;
+            color: #ff3300;
             font-weight: bold;
             white-space: nowrap;
             text-shadow: 0 0 10px #ff0000;
             font-size: 20px;
+            z-index: 50;
             cursor: pointer;
             user-select: none;
-            z-index: 50;
-            transition: opacity 0.3s, transform 0.3s;
+            transition: opacity 0.2s;
         }
 
-        /* THE CSS ORB (Pure Hardware Accelerated CSS) */
-        #orb-container {
+        /* THE HEAVY GLASS ORB */
+        #orb {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            width: 400px;
-            height: 400px;
+            width: 350px;
+            height: 350px;
             border-radius: 50%;
-            /* Thick Glass Effect */
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0) 50%),
-                        radial-gradient(circle, rgba(255,170,0,0.1) 0%, rgba(0,0,0,1) 100%);
-            box-shadow: inset 0 0 50px rgba(255,255,255,0.1), 0 0 30px rgba(255,69,0,0.2);
+            /* Layered shadows create the "Thickness" */
+            background: radial-gradient(circle at 35% 35%, #ffffff 0%, #333 10%, #000 80%);
+            box-shadow: 
+                inset -20px -20px 50px rgba(255,140,0,0.3), 
+                inset 10px 10px 30px rgba(255,255,255,0.4),
+                0 0 80px rgba(255,69,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 3s ease-out;
-            z-index: 20;
+            transition: transform 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* The Inner Polished Core */
-        #orb-core {
-            width: 150px;
-            height: 150px;
-            border: 1px solid rgba(255,170,0,0.5);
-            transform: rotate(45deg);
-            animation: rotateCore 10s linear infinite;
+        /* The Polished Shine (Inner Glint) */
+        #shine {
+            position: absolute;
+            top: 15%;
+            left: 20%;
+            width: 80px;
+            height: 40px;
+            background: rgba(255,255,255,0.4);
+            filter: blur(15px);
+            border-radius: 50%;
+            transform: rotate(-30deg);
         }
 
-        @keyframes rotateCore {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* The ARIES Whisper */
+        /* ARIES WHISPER */
         #zodiac-name {
             position: fixed;
-            bottom: 20px;
+            bottom: 30px;
             width: 100%;
             text-align: center;
-            color: #ffaa00;
-            font-size: 9px;
-            letter-spacing: 50px;
-            text-indent: 50px;
+            color: #cc8800;
+            font-size: 10px;
+            letter-spacing: 45px;
+            text-indent: 45px;
             opacity: 0;
-            transition: opacity 5s;
-            z-index: 10;
+            transition: opacity 4s;
         }
 
-        /* Movement Animation */
-        @keyframes drift {
-            0% { transform: translate(0,0); }
-            100% { transform: translate(var(--dx), var(--dy)); }
-        }
     </style>
 </head>
 <body>
 
     <div id="counter">BUREAUCRACY_EXPUNGED: 0/30</div>
     
-    <div id="orb-container">
-        <div id="orb-core"></div>
+    <div id="orb">
+        <div id="shine"></div>
     </div>
 
     <div id="zodiac-name">ARIES</div>
@@ -91,56 +85,56 @@
     <script>
         let zapCount = 0;
         const wordList = ["WAITING ROOMS", "INSURANCE CARDS", "SCHEDULING", "MEDICARE", "PET scan", "CT scan", "COPAY", "PAPERWORK", "REFERRALS", "FRONT DESK", "PRIOR AUTH", "bedpan"];
+        const activeWords = [];
 
-        function createWord() {
+        function spawn() {
             if(zapCount >= 30) return;
-            
             const w = document.createElement('div');
             w.className = 'word';
             w.innerText = wordList[Math.floor(Math.random() * wordList.length)];
             
-            // Random start position
-            const x = Math.random() * 90;
-            const y = Math.random() * 90;
+            // Random positions
+            let x = Math.random() * 90;
+            let y = Math.random() * 90;
+            let speed = 1 + Math.random() * 3;
+            
             w.style.left = x + 'vw';
             w.style.top = y + 'vh';
-            
-            // Random drift direction
-            w.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
-            w.style.setProperty('--dy', (Math.random() * 200 - 100) + 'px');
-            w.style.animation = `drift ${5 + Math.random() * 5}s infinite alternate ease-in-out`;
-
             document.body.appendChild(w);
+
+            const entry = { el: w, x, y, speed };
+            activeWords.push(entry);
 
             w.onmouseover = () => {
                 zapCount++;
                 document.getElementById('counter').innerText = `BUREAUCRACY_EXPUNGED: ${zapCount}/30`;
                 w.style.opacity = '0';
-                w.style.transform = 'scale(2)';
-                setTimeout(() => w.remove(), 300);
-                
-                if(zapCount === 30) triggerRitual();
+                setTimeout(() => w.remove(), 200);
+                if(zapCount === 30) finish();
             };
         }
 
-        // Spawn Loop
-        const spawner = setInterval(createWord, 800);
+        // Movement loop (Horizontal Drift)
+        setInterval(() => {
+            activeWords.forEach(obj => {
+                obj.x += 0.1 * obj.speed;
+                if(obj.x > 100) obj.x = -10;
+                obj.el.style.left = obj.x + 'vw';
+            });
+        }, 20);
 
-        function triggerRitual() {
-            clearInterval(spawner);
-            document.querySelectorAll('.word').forEach(w => w.remove());
+        setInterval(spawn, 700);
+
+        function finish() {
             document.getElementById('counter').style.display = 'none';
+            document.querySelectorAll('.word').forEach(w => w.remove());
             
-            // Bring in the CSS Orb
-            const orb = document.getElementById('orb-container');
-            orb.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            const orb = document.getElementById('orb');
+            orb.style.transform = 'translate(-50%, -50%) scale(1)';
             
-            // Flash white
-            document.body.style.backgroundColor = 'white';
             setTimeout(() => {
-                document.body.style.backgroundColor = 'black';
                 document.getElementById('zodiac-name').style.opacity = '1';
-            }, 100);
+            }, 2000);
         }
     </script>
 </body>
