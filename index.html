@@ -2,82 +2,107 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KOC | Kinship Project Base Camp</title>
+    <title>Kinship | A Personal Ascent</title>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: white; }
         
-        /* INTRO PULSE SCREEN */
+        /* STARFIELD BACKGROUND */
+        #stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0a0a2a 0%, #000 100%);
+            z-index: -1;
+        }
+
+        /* INTRO PULSE */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             z-index: 2000; background: #000;
         }
         .pulse-text {
-            font-size: 3rem; letter-spacing: 15px; opacity: 0;
-            animation: welcomePulse 4s ease-in-out 2 forwards;
+            font-size: 3.5rem; letter-spacing: 20px; opacity: 0;
+            text-shadow: 0 0 30px rgba(255,255,255,0.5);
+            animation: welcomePulse 5s ease-in-out 1 forwards;
         }
-        .tagline { font-size: 1.2rem; letter-spacing: 5px; margin-top: 20px; opacity: 0; animation: fadeIn 2s 1s forwards; }
+        .tagline { font-size: 1.2rem; letter-spacing: 8px; margin-top: 20px; opacity: 0; animation: fadeIn 3s 2s forwards; }
 
         @keyframes welcomePulse {
-            0% { opacity: 0; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(1.05); }
+            0% { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+            50% { opacity: 1; transform: scale(1); filter: blur(0px); }
+            100% { opacity: 0; transform: scale(1.1); filter: blur(5px); }
         }
-        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes fadeIn { to { opacity: 0.8; } }
 
-        /* MAIN UI - Hidden during pulse */
-        #main-ui { opacity: 0; transition: opacity 2s; display: flex; visibility: hidden; }
+        /* MAIN UI */
+        #main-ui { opacity: 0; transition: opacity 3s; display: flex; visibility: hidden; }
 
-        /* SIDEBAR - 5 ICONS */
+        /* FLOATING SIDEBAR ICONS */
         #nav-sidebar {
-            width: 160px; height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; gap: 35px;
-            padding-left: 30px; z-index: 100;
+            width: 180px; height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; gap: 40px;
+            padding-left: 40px; z-index: 100;
         }
         .nav-icon {
-            width: 65px; height: 65px; border: 2px solid; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.4s; position: relative;
-            font-weight: bold; font-size: 1.2rem;
+            width: 70px; height: 70px; border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.5s; position: relative;
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(5px);
+            animation: float 4s ease-in-out infinite alternate;
         }
-        .nav-icon:hover { transform: scale(1.2); box-shadow: 0 0 25px currentColor; }
+        .nav-icon:nth-child(2) { animation-delay: 0.5s; }
+        .nav-icon:nth-child(3) { animation-delay: 1s; }
+        .nav-icon:nth-child(4) { animation-delay: 1.5s; }
+        .nav-icon:nth-child(5) { animation-delay: 2s; }
+
+        @keyframes float {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-10px); }
+        }
+
+        .nav-icon:hover { 
+            transform: scale(1.2) !important; 
+            border-color: currentColor;
+            box-shadow: 0 0 30px currentColor;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Color Themes */
+        .icon-home { color: #ff6a00; }
+        .icon-lexicon { color: #00d2ff; }
+        .icon-orrery { color: #9d00ff; }
+        .icon-doctors { color: #39ff14; }
+        .icon-gallery { color: #ff00ea; }
+
+        /* CENTER ORB - The Breathing Heart */
+        #center-stage { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         
-        /* Icon Colors */
-        .icon-home { color: #ff4500; border-color: #ff4500; }
-        .icon-lexicon { color: #00d2ff; border-color: #00d2ff; }
-        .icon-orrery { color: #9d00ff; border-color: #9d00ff; }
-        .icon-doctors { color: #39ff14; border-color: #39ff14; }
-        .icon-gallery { color: #ff00ea; border-color: #ff00ea; }
-
-        /* TOOLTIP BOXES */
-        .tooltip {
-            position: absolute; left: 85px; background: rgba(10, 10, 10, 0.95);
-            border: 1px solid currentColor; padding: 15px; width: 220px;
-            opacity: 0; pointer-events: none; transition: 0.3s; font-size: 0.9rem;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        #orb-outer-glow {
+            padding: 20px; border-radius: 50%;
+            animation: breathe 4s ease-in-out infinite;
         }
-        .nav-icon:hover .tooltip { opacity: 1; }
 
-        /* CENTER STAGE */
-        #center-stage {
-            flex-grow: 1; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; height: 100vh;
+        @keyframes breathe {
+            0% { box-shadow: 0 0 50px rgba(255, 106, 0, 0.2); }
+            50% { box-shadow: 0 0 100px rgba(255, 106, 0, 0.5); }
+            100% { box-shadow: 0 0 50px rgba(255, 106, 0, 0.2); }
         }
+
         #orb-container {
-            width: 550px; height: 550px; border-radius: 50%;
-            overflow: hidden; box-shadow: 0 0 120px rgba(255,100,0,0.15);
-            border: 1px solid rgba(255,255,255,0.05);
+            width: 500px; height: 500px; border-radius: 50%;
+            overflow: hidden; border: 1px solid rgba(255,255,255,0.2);
         }
         #orb-img { width: 100%; height: 100%; object-fit: cover; }
 
         #zodiac-name {
-            margin-top: 40px; font-size: 4.5rem; letter-spacing: 65px; 
-            text-indent: 65px; color: #ffaa00; font-weight: bold;
-            filter: drop-shadow(0 0 20px rgba(255,170,0,0.3));
+            margin-top: 30px; font-size: 5rem; letter-spacing: 50px; text-indent: 50px;
+            color: rgba(255,255,255,0.9); font-weight: 100;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
         }
     </style>
 </head>
 <body>
+
+    <div id="stars"></div>
 
     <div id="intro-screen">
         <div class="pulse-text">WELCOME TO KINSHIP</div>
@@ -86,33 +111,39 @@
 
     <div id="main-ui">
         <nav id="nav-sidebar">
-            <div class="nav-icon icon-home">H<div class="tooltip">HOME: Return to the center of Kinship.</div></div>
-            <div class="nav-icon icon-lexicon">L<div class="tooltip">LEXICON: The encyclopedia of terms and shared wisdom.</div></div>
-            <div class="nav-icon icon-orrery">O<div class="tooltip">ORRERY: View the celestial trade of energy.</div></div>
-            <div class="nav-icon icon-doctors">D<div class="tooltip">DOCTORS QUARTERS: Information and professional insights.</div></div>
-            <div class="nav-icon icon-gallery">G<div class="tooltip">GALLERY: Stories and art from the community.</div></div>
+            <div class="nav-icon icon-home">H</div>
+            <div class="nav-icon icon-lexicon">L</div>
+            <div class="nav-icon icon-orrery">O</div>
+            <div class="nav-icon icon-doctors">D</div>
+            <div class="nav-icon icon-gallery">G</div>
         </nav>
 
         <main id="center-stage">
-            <div id="orb-container">
-                <img id="orb-img" src="Glass%20Orb%20Aries%20copilot.png" alt="Aries Orb">
+            <div id="orb-outer-glow">
+                <div id="orb-container">
+                    <img id="orb-img" src="Glass%20Orb%20Aries%20copilot.png" alt="Aries">
+                </div>
             </div>
             <div id="zodiac-name">ARIES</div>
         </main>
     </div>
 
     <script>
-        setTimeout(() => {
-            const intro = document.getElementById('intro-screen');
-            const main = document.getElementById('main-ui');
-            intro.style.transition = "opacity 2s";
-            intro.style.opacity = "0";
+        // Smoother Transition
+        window.onload = () => {
             setTimeout(() => {
-                intro.style.display = 'none';
-                main.style.visibility = 'visible';
-                main.style.opacity = '1';
-            }, 2000);
-        }, 8000);
+                const intro = document.getElementById('intro-screen');
+                const main = document.getElementById('main-ui');
+                intro.style.transition = "opacity 3s ease";
+                intro.style.opacity = "0";
+                
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    main.style.visibility = 'visible';
+                    main.style.opacity = '1';
+                }, 3000);
+            }, 5000);
+        };
     </script>
 </body>
 </html>
