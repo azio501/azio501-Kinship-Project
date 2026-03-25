@@ -1,5 +1,5 @@
  <style>
-    /* 1. THE UNIVERSE */
+    /* 1. THE UNIVERSE - Deep space background */
     body, html {
         margin: 0;
         padding: 0;
@@ -17,7 +17,7 @@
         z-index: 1;
     }
 
-    /* 2. THE STAGE */
+    /* 2. THE STAGE - Centering the experience */
     .kinship-stage {
         position: fixed;
         top: 0; left: 0;
@@ -45,48 +45,38 @@
     .ascent-text {
         font-family: 'Georgia', serif;
         color: #FFD700; 
-        font-size: clamp(16px, 2.5vw, 22px); /* Slightly larger for clarity */
-        font-weight: 700; /* Bolder to fight the blur */
+        font-size: clamp(16px, 2.5vw, 22px);
+        font-weight: 700; 
         text-transform: uppercase;
         letter-spacing: 0.5em;
         margin-top: 25px;
         opacity: 0;
-        /* Using a separate animation for sharper movement */
         animation: sharpAppearAndRise 9s ease-in-out forwards;
     }
 
-    /* 3. THE ANIMATION LOGIC */
+    /* 3. ANIMATION - Two Pulses and a Sharp Ascent */
     @keyframes doubleBreathAndRise {
-        /* FIRST PULSE */
         0% { opacity: 0; transform: scale(0.98); }
         15% { opacity: 1; text-shadow: 0 0 15px #FFD700; transform: scale(1); }
         30% { opacity: 0.05; transform: scale(0.98); }
 
-        /* SECOND PULSE - No blur, high clarity */
         45% { opacity: 1; text-shadow: 0 0 25px #FFD700; transform: scale(1); }
         65% { opacity: 1; transform: translateY(0); }
 
-        /* THE ASCENT */
         100% { 
             opacity: 0; 
             transform: translateY(-300px); 
-            filter: blur(2px); /* Minimal blur just for a 'motion' feel */
+            filter: blur(2px); 
         }
     }
 
     @keyframes sharpAppearAndRise {
-        /* Wait for Pulse 2 */
         0%, 38% { opacity: 0; transform: translateY(10px); }
-        
-        /* Clear Reappearance - NO BLUR */
         50% { opacity: 1; transform: translateY(0); }
         65% { opacity: 1; transform: translateY(0); }
-
-        /* Join the Ascent */
         100% { 
             opacity: 0; 
             transform: translateY(-300px); 
-            /* No blur here to keep it readable until the end */
         }
     }
 </style>
