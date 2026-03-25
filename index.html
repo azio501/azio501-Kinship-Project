@@ -45,48 +45,48 @@
     .ascent-text {
         font-family: 'Georgia', serif;
         color: #FFD700; 
-        /* Increased size and weight for readability */
-        font-size: clamp(14px, 2vw, 18px);
-        font-weight: bold;
+        font-size: clamp(16px, 2.5vw, 22px); /* Slightly larger for clarity */
+        font-weight: 700; /* Bolder to fight the blur */
         text-transform: uppercase;
         letter-spacing: 0.5em;
         margin-top: 25px;
         opacity: 0;
-        animation: appearAndRise 9s ease-in-out forwards;
+        /* Using a separate animation for sharper movement */
+        animation: sharpAppearAndRise 9s ease-in-out forwards;
     }
 
     /* 3. THE ANIMATION LOGIC */
     @keyframes doubleBreathAndRise {
         /* FIRST PULSE */
         0% { opacity: 0; transform: scale(0.98); }
-        15% { opacity: 1; text-shadow: 0 0 20px #FFD700; transform: scale(1); }
-        30% { opacity: 0.1; transform: scale(0.98); }
+        15% { opacity: 1; text-shadow: 0 0 15px #FFD700; transform: scale(1); }
+        30% { opacity: 0.05; transform: scale(0.98); }
 
-        /* SECOND PULSE (Sharp and clear) */
-        45% { opacity: 1; text-shadow: 0 0 30px #FFD700, 0 0 50px #FFA500; transform: scale(1); }
-        65% { opacity: 1; text-shadow: 0 0 10px #FFD700; transform: translateY(0); filter: blur(0); }
+        /* SECOND PULSE - No blur, high clarity */
+        45% { opacity: 1; text-shadow: 0 0 25px #FFD700; transform: scale(1); }
+        65% { opacity: 1; transform: translateY(0); }
 
-        /* THE ASCENT (Fading into the distance) */
+        /* THE ASCENT */
         100% { 
             opacity: 0; 
-            transform: translateY(-280px); 
-            filter: blur(4px); /* Reduced blur so it stays readable longer */
+            transform: translateY(-300px); 
+            filter: blur(2px); /* Minimal blur just for a 'motion' feel */
         }
     }
 
-    @keyframes appearAndRise {
+    @keyframes sharpAppearAndRise {
         /* Wait for Pulse 2 */
-        0%, 35% { opacity: 0; transform: translateY(10px); }
+        0%, 38% { opacity: 0; transform: translateY(10px); }
         
-        /* Clear Reappearance */
-        50% { opacity: 0.9; transform: translateY(0); }
-        65% { opacity: 0.9; transform: translateY(0); }
+        /* Clear Reappearance - NO BLUR */
+        50% { opacity: 1; transform: translateY(0); }
+        65% { opacity: 1; transform: translateY(0); }
 
         /* Join the Ascent */
         100% { 
             opacity: 0; 
-            transform: translateY(-280px); 
-            filter: blur(2px); 
+            transform: translateY(-300px); 
+            /* No blur here to keep it readable until the end */
         }
     }
 </style>
