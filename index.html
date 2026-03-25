@@ -1,76 +1,149 @@
- <style>
-    /* FORCING THE STAGE - This ignores all other page rules */
-    .kinship-ascent-overlay {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        align-items: center !important;
-        z-index: 99999 !important;
-        background: radial-gradient(circle, rgba(20,20,30,0.4) 0%, rgba(0,0,0,0) 70%); /* Subtle depth */
-        pointer-events: none;
-    }
-
-    .welcome-line {
-        font-family: 'Georgia', serif !important;
-        color: #FFFFFF !important;
-        /* Forced size to stay on one line */
-        font-size: clamp(18px, 4.5vw, 36px) !important; 
-        text-transform: uppercase !important;
-        letter-spacing: 0.35em !important;
-        white-space: nowrap !important; /* Prevents stacking */
-        margin: 0 !important;
-        opacity: 0;
-        animation: goldenPulseAndAscent 7s ease-in-out forwards !important;
-    }
-
-    .ascent-line {
-        font-family: 'Arial', sans-serif !important;
-        color: #FFD700 !important; /* Golden hue */
-        font-size: 11px !important;
-        letter-spacing: 0.6em !important;
-        margin-top: 20px !important;
-        opacity: 0;
-        animation: fadeIn 2s ease-in forwards 1.5s !important;
-    }
-
-    @keyframes goldenPulseAndAscent {
-        /* Pulse 1 */
-        15%, 30% { 
-            opacity: 1;
-            text-shadow: 0 0 30px #FFD700, 0 0 60px #FFA500;
-            transform: scale(1.03);
-        }
-        40% { 
-            text-shadow: 0 0 10px #FFD700;
-            transform: scale(1);
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kinship | A Personal Ascent</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: white; }
+        
+        /* STARFIELD BACKGROUND */
+        #stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0a0a2a 0%, #000 100%);
+            z-index: -1;
         }
 
-        /* Pulse 2 */
-        55%, 70% { 
-            text-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500;
-            transform: scale(1.03);
-            opacity: 1;
+        /* INTRO PULSE */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 2000; background: #000;
+        }
+        .pulse-text {
+            font-size: 3.5rem; letter-spacing: 20px; opacity: 0;
+            text-shadow: 0 0 30px rgba(255,255,255,0.5);
+            animation: welcomePulse 5s ease-in-out 1 forwards;
+        }
+        .tagline { font-size: 1.2rem; letter-spacing: 8px; margin-top: 20px; opacity: 0; animation: fadeIn 3s 2s forwards; }
+
+        @keyframes welcomePulse {
+            0% { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+            50% { opacity: 1; transform: scale(1); filter: blur(0px); }
+            100% { opacity: 0; transform: scale(1.1); filter: blur(5px); }
+        }
+        @keyframes fadeIn { to { opacity: 0.8; } }
+
+        /* MAIN UI */
+        #main-ui { opacity: 0; transition: opacity 3s; display: flex; visibility: hidden; }
+
+        /* FLOATING SIDEBAR ICONS */
+        #nav-sidebar {
+            width: 180px; height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; gap: 40px;
+            padding-left: 40px; z-index: 100;
+        }
+        .nav-icon {
+            width: 70px; height: 70px; border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.5s; position: relative;
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(5px);
+            animation: float 4s ease-in-out infinite alternate;
+        }
+        .nav-icon:nth-child(2) { animation-delay: 0.5s; }
+        .nav-icon:nth-child(3) { animation-delay: 1s; }
+        .nav-icon:nth-child(4) { animation-delay: 1.5s; }
+        .nav-icon:nth-child(5) { animation-delay: 2s; }
+
+        @keyframes float {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-10px); }
         }
 
-        /* The Ascent - Floating into the stars */
-        100% {
-            opacity: 0;
-            transform: translateY(-250px);
-            filter: blur(12px);
+        .nav-icon:hover { 
+            transform: scale(1.2) !important; 
+            border-color: currentColor;
+            box-shadow: 0 0 30px currentColor;
+            background: rgba(255,255,255,0.1);
         }
-    }
 
-    @keyframes fadeIn {
-        to { opacity: 0.8; }
-    }
-</style>
+        /* Color Themes */
+        .icon-home { color: #ff6a00; }
+        .icon-lexicon { color: #00d2ff; }
+        .icon-orrery { color: #9d00ff; }
+        .icon-doctors { color: #39ff14; }
+        .icon-gallery { color: #ff00ea; }
 
-<div class="kinship-ascent-overlay">
-    <h1 class="welcome-line">Welcome to Kinship</h1>
-    <div class="ascent-line">A PERSONAL ASCENT</div>
-</div>
+        /* CENTER ORB - The Breathing Heart */
+        #center-stage { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        
+        #orb-outer-glow {
+            padding: 20px; border-radius: 50%;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0% { box-shadow: 0 0 50px rgba(255, 106, 0, 0.2); }
+            50% { box-shadow: 0 0 100px rgba(255, 106, 0, 0.5); }
+            100% { box-shadow: 0 0 50px rgba(255, 106, 0, 0.2); }
+        }
+
+        #orb-container {
+            width: 500px; height: 500px; border-radius: 50%;
+            overflow: hidden; border: 1px solid rgba(255,255,255,0.2);
+        }
+        #orb-img { width: 100%; height: 100%; object-fit: cover; }
+
+        #zodiac-name {
+            margin-top: 30px; font-size: 5rem; letter-spacing: 50px; text-indent: 50px;
+            color: rgba(255,255,255,0.9); font-weight: 100;
+            text-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="stars"></div>
+
+    <div id="intro-screen">
+        <div class="pulse-text">WELCOME TO KINSHIP</div>
+        <div class="tagline">A PERSONAL ASCENT</div>
+    </div>
+
+    <div id="main-ui">
+        <nav id="nav-sidebar">
+            <div class="nav-icon icon-home">H</div>
+            <div class="nav-icon icon-lexicon">L</div>
+            <div class="nav-icon icon-orrery">O</div>
+            <div class="nav-icon icon-doctors">D</div>
+            <div class="nav-icon icon-gallery">G</div>
+        </nav>
+
+        <main id="center-stage">
+            <div id="orb-outer-glow">
+                <div id="orb-container">
+                    <img id="orb-img" src="Glass%20Orb%20Aries%20copilot.png" alt="Aries">
+                </div>
+            </div>
+            <div id="zodiac-name">ARIES</div>
+        </main>
+    </div>
+
+    <script>
+        // Smoother Transition
+        window.onload = () => {
+            setTimeout(() => {
+                const intro = document.getElementById('intro-screen');
+                const main = document.getElementById('main-ui');
+                intro.style.transition = "opacity 3s ease";
+                intro.style.opacity = "0";
+                
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    main.style.visibility = 'visible';
+                    main.style.opacity = '1';
+                }, 3000);
+            }, 5000);
+        };
+    </script>
+</body>
+</html>
