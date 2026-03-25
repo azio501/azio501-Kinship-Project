@@ -1,5 +1,5 @@
  <style>
-    /* 1. THE UNIVERSE: Deep space background */
+    /* 1. THE UNIVERSE */
     body, html {
         margin: 0;
         padding: 0;
@@ -17,7 +17,7 @@
         z-index: 1;
     }
 
-    /* 2. THE STAGE: Centering everything */
+    /* 2. THE STAGE */
     .kinship-stage {
         position: fixed;
         top: 0; left: 0;
@@ -39,32 +39,33 @@
         white-space: nowrap;
         margin: 0;
         opacity: 0;
-        /* Animation lasts 8 seconds to allow for two distinct pulses */
-        animation: doublePulseAndAscent 8s ease-in-out forwards;
+        /* Adjusted for the double-pulse-then-climb logic */
+        animation: doubleBreathAndRise 9s ease-in-out forwards;
     }
 
     .ascent-text {
         font-family: sans-serif;
-        color: #FFD700; /* Golden Yellow */
+        color: #FFD700; 
         font-size: 11px;
         letter-spacing: 0.6em;
         margin-top: 20px;
         opacity: 0;
-        animation: simpleFadeAndAscent 8s ease-in-out forwards;
+        /* This waits for the second pulse to appear */
+        animation: appearAndRise 9s ease-in-out forwards;
     }
 
-    /* 3. THE MOVEMENT LOGIC */
-    @keyframes doublePulseAndAscent {
-        /* PULSE ONE */
-        0% { opacity: 0; transform: scale(0.95); }
+    /* 3. THE MAGIC: TWO PULSES THEN ASCENT */
+    @keyframes doubleBreathAndRise {
+        /* FIRST PULSE */
+        0% { opacity: 0; transform: scale(0.98); }
         15% { opacity: 1; text-shadow: 0 0 30px #FFD700, 0 0 60px #FFA500; transform: scale(1); }
-        30% { opacity: 0.3; text-shadow: 0 0 5px #FFD700; transform: scale(0.98); }
+        30% { opacity: 0.1; text-shadow: 0 0 5px #FFD700; transform: scale(0.98); }
 
-        /* PULSE TWO (Re-appearing) */
-        45% { opacity: 1; text-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500; transform: scale(1.02); }
-        65% { opacity: 1; text-shadow: 0 0 10px #FFD700; transform: scale(1); }
+        /* SECOND PULSE (The Re-appearance) */
+        45% { opacity: 1; text-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500; transform: scale(1); }
+        60% { opacity: 1; text-shadow: 0 0 10px #FFD700; transform: translateY(0); }
 
-        /* THE ASCENT (Disappearing Upward) */
+        /* THE ASCENT (Starts at 70%) */
         100% { 
             opacity: 0; 
             transform: translateY(-250px); 
@@ -72,10 +73,15 @@
         }
     }
 
-    @keyframes simpleFadeAndAscent {
-        0%, 10% { opacity: 0; }
-        25% { opacity: 0.6; } /* Fades in during the first pulse */
-        65% { opacity: 0.6; transform: translateY(0); }
+    @keyframes appearAndRise {
+        /* Stay invisible during Pulse 1 */
+        0%, 35% { opacity: 0; transform: translateY(10px); }
+        
+        /* Appear with Pulse 2 */
+        50% { opacity: 0.8; transform: translateY(0); }
+        65% { opacity: 0.8; transform: translateY(0); }
+
+        /* Join the Ascent */
         100% { 
             opacity: 0; 
             transform: translateY(-250px); 
