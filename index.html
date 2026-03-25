@@ -1,9 +1,9 @@
  <style>
-    /* 1. THE UNIVERSE: Bringing back the dark galaxy */
+    /* 1. THE UNIVERSE: Deep space background */
     body, html {
         margin: 0;
         padding: 0;
-        background: #020205; /* Deep space black */
+        background: #000000;
         overflow: hidden;
     }
 
@@ -17,20 +17,7 @@
         z-index: 1;
     }
 
-    /* Twinkling Stars effect */
-    .galaxy-bg::after {
-        content: "";
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background-image: 
-            radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
-            radial-gradient(1px 1px at 150px 50px, #fff, rgba(0,0,0,0)),
-            radial-gradient(2px 2px at 100px 150px, #ddd, rgba(0,0,0,0));
-        background-size: 200px 200px;
-        opacity: 0.3;
-    }
-
-    /* 2. THE TEXT CONTAINER */
+    /* 2. THE STAGE: Centering everything */
     .kinship-stage {
         position: fixed;
         top: 0; left: 0;
@@ -46,46 +33,54 @@
     .welcome-text {
         font-family: 'Georgia', serif;
         color: #ffffff;
-        font-size: clamp(22px, 5vw, 40px); /* Adjusts to fit one line */
+        font-size: clamp(22px, 5vw, 38px); 
         text-transform: uppercase;
-        letter-spacing: 0.3em;
-        white-space: nowrap; /* Forces one line */
+        letter-spacing: 0.35em;
+        white-space: nowrap;
         margin: 0;
         opacity: 0;
-        animation: doublePulse 5s ease-in-out forwards;
+        /* Animation lasts 8 seconds to allow for two distinct pulses */
+        animation: doublePulseAndAscent 8s ease-in-out forwards;
     }
 
     .ascent-text {
         font-family: sans-serif;
-        color: #FFD700; /* Golden yellow */
-        font-size: 12px;
-        letter-spacing: 0.5em;
+        color: #FFD700; /* Golden Yellow */
+        font-size: 11px;
+        letter-spacing: 0.6em;
         margin-top: 20px;
         opacity: 0;
-        animation: fadeInAndRise 5s ease-in-out forwards;
+        animation: simpleFadeAndAscent 8s ease-in-out forwards;
     }
 
-    /* 3. THE MOVEMENT */
-    @keyframes doublePulse {
-        /* Start & Pulse 1 */
-        0% { opacity: 0; transform: scale(1); }
-        15% { opacity: 1; text-shadow: 0 0 30px #FFD700, 0 0 60px #FFA500; transform: scale(1.05); }
-        30% { text-shadow: 0 0 10px #FFD700; transform: scale(1); }
-        
-        /* Pulse 2 */
-        45% { opacity: 1; text-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500; transform: scale(1.05); }
-        60% { text-shadow: 0 0 10px #FFD700; transform: scale(1); opacity: 1; }
+    /* 3. THE MOVEMENT LOGIC */
+    @keyframes doublePulseAndAscent {
+        /* PULSE ONE */
+        0% { opacity: 0; transform: scale(0.95); }
+        15% { opacity: 1; text-shadow: 0 0 30px #FFD700, 0 0 60px #FFA500; transform: scale(1); }
+        30% { opacity: 0.3; text-shadow: 0 0 5px #FFD700; transform: scale(0.98); }
 
-        /* The Final Ascent */
-        100% { opacity: 0; transform: translateY(-200px); filter: blur(10px); }
+        /* PULSE TWO (Re-appearing) */
+        45% { opacity: 1; text-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500; transform: scale(1.02); }
+        65% { opacity: 1; text-shadow: 0 0 10px #FFD700; transform: scale(1); }
+
+        /* THE ASCENT (Disappearing Upward) */
+        100% { 
+            opacity: 0; 
+            transform: translateY(-250px); 
+            filter: blur(15px); 
+        }
     }
 
-    @keyframes fadeInAndRise {
-        0% { opacity: 0; }
-        20% { opacity: 0.7; } /* Appears while Welcome is pulsing */
-        60% { opacity: 0.7; transform: translateY(0); }
-        /* Joins the ascent */
-        100% { opacity: 0; transform: translateY(-200px); filter: blur(10px); }
+    @keyframes simpleFadeAndAscent {
+        0%, 10% { opacity: 0; }
+        25% { opacity: 0.6; } /* Fades in during the first pulse */
+        65% { opacity: 0.6; transform: translateY(0); }
+        100% { 
+            opacity: 0; 
+            transform: translateY(-250px); 
+            filter: blur(10px); 
+        }
     }
 </style>
 
