@@ -1,6 +1,6 @@
  <style>
-    /* THE STAGE: Force centering and visibility */
-    .kinship-base-layer {
+    /* FORCING THE STAGE - This ignores all other page rules */
+    .kinship-ascent-overlay {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -10,68 +10,67 @@
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
-        z-index: 99999 !important; /* Sitting on top of everything */
-        background: transparent !important;
+        z-index: 99999 !important;
+        background: radial-gradient(circle, rgba(20,20,30,0.4) 0%, rgba(0,0,0,0) 70%); /* Subtle depth */
         pointer-events: none;
     }
 
-    .kinship-title {
+    .welcome-line {
         font-family: 'Georgia', serif !important;
         color: #FFFFFF !important;
-        /* Smaller font to fit one line */
-        font-size: 28px !important; 
+        /* Forced size to stay on one line */
+        font-size: clamp(18px, 4.5vw, 36px) !important; 
         text-transform: uppercase !important;
-        letter-spacing: 0.25em !important;
+        letter-spacing: 0.35em !important;
+        white-space: nowrap !important; /* Prevents stacking */
         margin: 0 !important;
         opacity: 0;
-        white-space: nowrap !important;
-        /* The Breathing & Ascent Animation */
-        animation: yellowAscent 7s ease-in-out forwards !important;
+        animation: goldenPulseAndAscent 7s ease-in-out forwards !important;
     }
 
-    .kinship-sub {
+    .ascent-line {
         font-family: 'Arial', sans-serif !important;
-        color: rgba(255, 255, 255, 0.5) !important;
-        font-size: 12px !important;
-        letter-spacing: 0.5em !important;
-        margin-top: 15px !important;
+        color: #FFD700 !important; /* Golden hue */
+        font-size: 11px !important;
+        letter-spacing: 0.6em !important;
+        margin-top: 20px !important;
         opacity: 0;
-        animation: fadeInOnly 2s ease-in forwards 1s !important;
+        animation: fadeIn 2s ease-in forwards 1.5s !important;
     }
 
-    @keyframes yellowAscent {
-        /* Pulse 1: Yellow/Gold */
+    @keyframes goldenPulseAndAscent {
+        /* Pulse 1 */
         15%, 30% { 
             opacity: 1;
-            text-shadow: 0 0 20px #FFD700, 0 0 40px #FFA500 !important;
+            text-shadow: 0 0 30px #FFD700, 0 0 60px #FFA500;
             transform: scale(1.03);
         }
         40% { 
-            text-shadow: 0 0 5px #FFD700 !important;
+            text-shadow: 0 0 10px #FFD700;
             transform: scale(1);
         }
 
-        /* Pulse 2: Yellow/Gold */
-        50%, 65% { 
-            text-shadow: 0 0 30px #FFD700, 0 0 50px #FFA500 !important;
+        /* Pulse 2 */
+        55%, 70% { 
+            text-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500;
             transform: scale(1.03);
             opacity: 1;
         }
 
-        /* The Ascent: Float Up and Dissolve */
+        /* The Ascent - Floating into the stars */
         100% {
             opacity: 0;
-            transform: translateY(-180px) !important;
-            filter: blur(10px);
+            transform: translateY(-250px);
+            filter: blur(12px);
         }
     }
 
-    @keyframes fadeInOnly {
-        to { opacity: 1; }
+    @keyframes fadeIn {
+        to { opacity: 0.8; }
     }
 </style>
 
-<div class="kinship-base-layer">
-    <h1 class="kinship-title">Welcome to Kinship</h1>
-    <div class="kinship-sub">A PERSONAL ASCENT</div>
+<div class="kinship-ascent-overlay">
+    <h1 class="welcome-line">Welcome to Kinship</h1>
+    <div class="ascent-line">A PERSONAL ASCENT</div>
 </div>
