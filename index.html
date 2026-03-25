@@ -1,149 +1,97 @@
- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Kinship | A Personal Ascent</title>
-    <style>
-        /* BASE STAGE */
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Georgia', serif; color: white; }
+ <style>
+    /* 1. THE UNIVERSE: Bringing back the dark galaxy */
+    body, html {
+        margin: 0;
+        padding: 0;
+        background: #020205; /* Deep space black */
+        overflow: hidden;
+    }
+
+    .galaxy-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%);
+        z-index: 1;
+    }
+
+    /* Twinkling Stars effect */
+    .galaxy-bg::after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: 
+            radial-gradient(1px 1px at 20px 30px, #fff, rgba(0,0,0,0)),
+            radial-gradient(1px 1px at 150px 50px, #fff, rgba(0,0,0,0)),
+            radial-gradient(2px 2px at 100px 150px, #ddd, rgba(0,0,0,0));
+        background-size: 200px 200px;
+        opacity: 0.3;
+    }
+
+    /* 2. THE TEXT CONTAINER */
+    .kinship-stage {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        pointer-events: none;
+    }
+
+    .welcome-text {
+        font-family: 'Georgia', serif;
+        color: #ffffff;
+        font-size: clamp(22px, 5vw, 40px); /* Adjusts to fit one line */
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        white-space: nowrap; /* Forces one line */
+        margin: 0;
+        opacity: 0;
+        animation: doublePulse 5s ease-in-out forwards;
+    }
+
+    .ascent-text {
+        font-family: sans-serif;
+        color: #FFD700; /* Golden yellow */
+        font-size: 12px;
+        letter-spacing: 0.5em;
+        margin-top: 20px;
+        opacity: 0;
+        animation: fadeInAndRise 5s ease-in-out forwards;
+    }
+
+    /* 3. THE MOVEMENT */
+    @keyframes doublePulse {
+        /* Start & Pulse 1 */
+        0% { opacity: 0; transform: scale(1); }
+        15% { opacity: 1; text-shadow: 0 0 30px #FFD700, 0 0 60px #FFA500; transform: scale(1.05); }
+        30% { text-shadow: 0 0 10px #FFD700; transform: scale(1); }
         
-        #stars-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #050510 0%, #000 100%);
-            z-index: -1;
-        }
+        /* Pulse 2 */
+        45% { opacity: 1; text-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500; transform: scale(1.05); }
+        60% { text-shadow: 0 0 10px #FFD700; transform: scale(1); opacity: 1; }
 
-        /* INTRO OVERLAY */
-        #intro-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 9999; background: #000;
-            transition: opacity 3s ease-in-out;
-        }
+        /* The Final Ascent */
+        100% { opacity: 0; transform: translateY(-200px); filter: blur(10px); }
+    }
 
-        .welcome-line {
-            font-size: clamp(24px, 5vw, 48px);
-            letter-spacing: 0.4em;
-            text-transform: uppercase;
-            color: #FFFFFF;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-            opacity: 0;
-            animation: goldenPulse 6s ease-in-out forwards;
-        }
+    @keyframes fadeInAndRise {
+        0% { opacity: 0; }
+        20% { opacity: 0.7; } /* Appears while Welcome is pulsing */
+        60% { opacity: 0.7; transform: translateY(0); }
+        /* Joins the ascent */
+        100% { opacity: 0; transform: translateY(-200px); filter: blur(10px); }
+    }
+</style>
 
-        .ascent-line {
-            font-size: 12px;
-            letter-spacing: 0.8em;
-            color: #FFD700;
-            margin-top: 30px;
-            opacity: 0;
-            animation: fadeInOut 6s ease-in-out forwards;
-        }
+<div class="galaxy-bg"></div>
 
-        @keyframes goldenPulse {
-            0% { opacity: 0; transform: scale(0.95); filter: blur(5px); }
-            30% { opacity: 1; transform: scale(1); filter: blur(0px); text-shadow: 0 0 40px #FFD700; }
-            70% { opacity: 1; transform: scale(1.02); }
-            100% { opacity: 0; transform: translateY(-50px); filter: blur(10px); }
-        }
-
-        @keyframes fadeInOut {
-            20% { opacity: 0; }
-            50% { opacity: 0.8; }
-            100% { opacity: 0; transform: translateY(-30px); }
-        }
-
-        /* MAIN INTERFACE (Hidden at start) */
-        #main-ui { 
-            opacity: 0; 
-            display: flex; 
-            visibility: hidden; 
-            transition: opacity 4s ease;
-        }
-
-        #nav-sidebar {
-            width: 150px; height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; gap: 40px; z-index: 100;
-        }
-
-        .nav-icon {
-            width: 60px; height: 60px; border: 1px solid rgba(255,215,0,0.3);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.5s; color: #FFD700;
-            background: rgba(255,255,255,0.03); backdrop-filter: blur(5px);
-        }
-
-        .nav-icon:hover { 
-            transform: scale(1.2); 
-            box-shadow: 0 0 30px #FFD700; 
-            background: rgba(255,215,0,0.1); 
-        }
-
-        /* THE ORB */
-        #center-stage { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        
-        #orb-container {
-            width: 500px; height: 500px; border-radius: 50%;
-            overflow: hidden; border: 1px solid rgba(255,215,0,0.2);
-            box-shadow: 0 0 80px rgba(255,215,0,0.1);
-            animation: orbitFloat 8s ease-in-out infinite;
-        }
-
-        #orb-img { width: 100%; height: 100%; object-fit: cover; }
-
-        @keyframes orbitFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        #zodiac-name {
-            margin-top: 30px; font-size: 4rem; letter-spacing: 40px; text-indent: 40px;
-            color: #FFD700; font-weight: 100; opacity: 0.9;
-        }
-    </style>
-</head>
-<body>
-
-    <div id="stars-canvas"></div>
-
-    <div id="intro-screen">
-        <h1 class="welcome-line">Welcome to Kinship</h1>
-        <div class="ascent-line">A PERSONAL ASCENT</div>
-    </div>
-
-    <div id="main-ui">
-        <nav id="nav-sidebar">
-            <div class="nav-icon">H</div>
-            <div class="nav-icon">L</div>
-            <div class="nav-icon">O</div>
-            <div class="nav-icon">D</div>
-            <div class="nav-icon">G</div>
-        </nav>
-
-        <main id="center-stage">
-            <div id="orb-container">
-                <img id="orb-img" src="Glass%20Orb%20Aries%20copilot.png" alt="Aries">
-            </div>
-            <h2 id="zodiac-name">ARIES</h2>
-        </main>
-    </div>
-
-    <script>
-        window.onload = () => {
-            const intro = document.getElementById('intro-screen');
-            const main = document.getElementById('main-ui');
-            
-            // Wait for the 6-second animation to finish, then transition
-            setTimeout(() => {
-                intro.style.opacity = "0";
-                
-                setTimeout(() => {
-                    intro.style.display = 'none';
-                    main.style.visibility = 'visible';
-                    main.style.opacity = '1';
-                }, 3000);
-            }, 6500);
-        };
-    </script>
-</body>
-</html>
+<div class="kinship-stage">
+    <h1 class="welcome-text">Welcome to Kinship</h1>
+    <div class="ascent-text">A PERSONAL ASCENT</div>
+</div>
