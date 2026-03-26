@@ -1,0 +1,85 @@
+<style>
+    /* THE INVISIBLE BOX: This covers the whole screen to force centering */
+    .kinship-ascent-stage {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        z-index: 999999 !important; /* Maximum priority */
+        pointer-events: none !important;
+        background: transparent !important;
+        /* TEMP BORDER: Delete the line below once you see the text! */
+        border: 2px solid rgba(255,0,0,0.2); 
+    }
+
+    .kinship-main-text {
+        font-family: 'Georgia', serif !important;
+        color: #FFFFFF !important;
+        font-size: clamp(20px, 4vw, 32px) !important; /* Responsive sizing */
+        text-transform: uppercase !important;
+        letter-spacing: 0.3em !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important; /* Keeps it on one line */
+        opacity: 0;
+        animation: goldPulseAndRise 8s ease-in-out forwards !important;
+    }
+
+    .kinship-sub-text {
+        font-family: sans-serif !important;
+        color: #FFD700 !important; /* Golden sub-text */
+        font-size: 10px !important;
+        letter-spacing: 0.6em !important;
+        margin-top: 20px !important;
+        opacity: 0;
+        animation: fadeInOnly 2s ease-in forwards 1s !important;
+    }
+
+    @keyframes goldPulseAndRise {
+        /* Start visible immediately to test */
+        0% { opacity: 0; transform: translateY(0); }
+        5% { opacity: 1; }
+        
+        /* Pulse 1: Golden Glow */
+        20% { 
+            text-shadow: 0 0 30px #FFD700, 0 0 60px #FFA500;
+            transform: scale(1.05);
+        }
+        35% { 
+            text-shadow: 0 0 10px #FFD700;
+            transform: scale(1);
+        }
+
+        /* Pulse 2: Golden Glow */
+        50% { 
+            text-shadow: 0 0 40px #FFD700, 0 0 80px #FFA500;
+            transform: scale(1.05);
+        }
+        65% { 
+            text-shadow: 0 0 10px #FFD700;
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* The Ascent: Moving Upward into the Universe */
+        100% {
+            opacity: 0;
+            transform: translateY(-250px);
+            filter: blur(10px);
+        }
+    }
+
+    @keyframes fadeInOnly {
+        to { opacity: 0.7; }
+    }
+</style>
+
+<div class="kinship-ascent-stage">
+    <h1 class="kinship-main-text">Welcome to Kinship</h1>
+    <div class="kinship-sub-text">A PERSONAL ASCENT</div>
+</div>
