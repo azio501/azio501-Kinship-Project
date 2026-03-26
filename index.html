@@ -1,89 +1,100 @@
- <style>
-    /* 1. THE UNIVERSE - Deep space background */
-    body, html {
-        margin: 0;
-        padding: 0;
-        background: #000000;
-        overflow: hidden;
-    }
-
-    .galaxy-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%);
-        z-index: 1;
-    }
-
-    /* 2. THE STAGE - Centering the experience */
-    .kinship-stage {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 100;
-        pointer-events: none;
-    }
-
-    .welcome-text {
-        font-family: 'Georgia', serif;
-        color: #ffffff;
-        font-size: clamp(24px, 6vw, 42px); 
-        text-transform: uppercase;
-        letter-spacing: 0.35em;
-        white-space: nowrap;
-        margin: 0;
-        opacity: 0;
-        animation: doubleBreathAndRise 9s ease-in-out forwards;
-    }
-
-    .ascent-text {
-        font-family: 'Georgia', serif;
-        color: #FFD700; 
-        font-size: clamp(16px, 2.5vw, 22px);
-        font-weight: 700; 
-        text-transform: uppercase;
-        letter-spacing: 0.5em;
-        margin-top: 25px;
-        opacity: 0;
-        animation: sharpAppearAndRise 9s ease-in-out forwards;
-    }
-
-    /* 3. ANIMATION - Two Pulses and a Sharp Ascent */
-    @keyframes doubleBreathAndRise {
-        0% { opacity: 0; transform: scale(0.98); }
-        15% { opacity: 1; text-shadow: 0 0 15px #FFD700; transform: scale(1); }
-        30% { opacity: 0.05; transform: scale(0.98); }
-
-        45% { opacity: 1; text-shadow: 0 0 25px #FFD700; transform: scale(1); }
-        65% { opacity: 1; transform: translateY(0); }
-
-        100% { 
-            opacity: 0; 
-            transform: translateY(-300px); 
-            filter: blur(2px); 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinship Backup - March 26</title>
+    <style>
+        /* 1. THE UNIVERSE - Deep space background */
+        body, html {
+            margin: 0;
+            padding: 0;
+            background: #000000;
+            overflow: hidden;
         }
-    }
 
-    @keyframes sharpAppearAndRise {
-        0%, 38% { opacity: 0; transform: translateY(10px); }
-        50% { opacity: 1; transform: translateY(0); }
-        65% { opacity: 1; transform: translateY(0); }
-        100% { 
-            opacity: 0; 
-            transform: translateY(-300px); 
+        .galaxy-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%);
+            z-index: 1;
         }
-    }
-</style>
 
-<div class="galaxy-bg"></div>
+        /* 2. THE STAGE - Centering the experience */
+        .kinship-stage {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            pointer-events: none;
+        }
 
-<div class="kinship-stage">
-    <h1 class="welcome-text">Welcome to Kinship</h1>
-    <div class="ascent-text">A Personal Ascent</div>
-</div>
+        .welcome-text {
+            font-family: 'Georgia', serif;
+            color: #ffffff;
+            font-size: clamp(24px, 6vw, 42px); 
+            text-transform: uppercase;
+            letter-spacing: 0.35em;
+            white-space: nowrap;
+            margin: 0;
+            opacity: 0;
+            animation: doubleBreathAndRise 9s ease-in-out forwards;
+        }
+
+        .ascent-text {
+            font-family: 'Georgia', serif;
+            color: #FFD700; 
+            font-size: clamp(16px, 2.5vw, 22px);
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            margin-top: 25px;
+            opacity: 0;
+            animation: sharpAppearAndRise 9s ease-in-out forwards;
+        }
+
+        /* 3. ANIMATION - Two Pulses and a Sharp Ascent */
+        @keyframes doubleBreathAndRise {
+            0% { opacity: 0; transform: scale(0.98); }
+            15% { opacity: 1; text-shadow: 0 0 15px #FFD700; transform: scale(1); }
+            30% { opacity: 0.05; transform: scale(0.98); }
+
+            45% { opacity: 1; text-shadow: 0 0 25px #FFD700; transform: scale(1); }
+            65% { opacity: 1; transform: translateY(0); }
+
+            100% { 
+                opacity: 0; 
+                transform: translateY(-300px); 
+                filter: blur(2px); 
+            }
+        }
+
+        @keyframes sharpAppearAndRise {
+            0%, 38% { opacity: 0; transform: translateY(10px); }
+            50% { opacity: 1; transform: translateY(0); }
+            65% { opacity: 1; transform: translateY(0); }
+            100% { 
+                opacity: 0; 
+                transform: translateY(-300px); 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="galaxy-bg"></div>
+
+    <div class="kinship-stage">
+        <h1 class="welcome-text">Welcome to Kinship</h1>
+        <div class="ascent-text">A Personal Ascent</div>
+    </div>
+
+</body>
+</html>
