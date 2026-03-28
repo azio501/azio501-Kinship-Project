@@ -11,6 +11,8 @@
             padding: 0;
             background: #000000;
             overflow: hidden;
+            height: 100%;
+            width: 100%;
         }
 
         .galaxy-bg {
@@ -23,7 +25,31 @@
             z-index: 1;
         }
 
-        /* 2. THE STAGE - Centering the experience */
+        /* 2. THE STARS - Procedural starfield using box-shadow */
+        .galaxy-bg::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            /* Creating a field of stars with varying positions and soft glows */
+            box-shadow: 
+                15vw 15vh 1px #fff, 35vw 45vh 2px #fff, 80vw 10vh 1px #fff,
+                90vw 80vh 1px #fff, 12vw 75vh 2px #fff, 50vw 50vh 1px #fff,
+                25vw 30vh 1px rgba(255,255,255,0.5), 75vw 65vh 1.5px rgba(255,255,255,0.8),
+                40vw 12vh 1px #fff, 65vw 88vh 1px #fff, 8vw 52vh 2px #fff,
+                20vw 80vh 1px #fff, 45vw 25vh 1px rgba(255,255,255,0.3),
+                85vw 35vh 1px #fff, 95vw 5vh 2px #fff, 55vw 75vh 1px #fff;
+            animation: twinkle 8s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 3. THE STAGE - Centering the experience */
         .kinship-stage {
             position: fixed;
             top: 0; left: 0;
@@ -60,29 +86,56 @@
             animation: sharpAppearAndRise 9s ease-in-out forwards;
         }
 
-        /* 3. ANIMATION - Two Pulses and a Sharp Ascent */
+        /* 4. ANIMATION - Two Pulses and a Sharp Ascent */
         @keyframes doubleBreathAndRise {
-            0% { opacity: 0; transform: scale(0.98); }
-            15% { opacity: 1; text-shadow: 0 0 15px #FFD700; transform: scale(1); }
-            30% { opacity: 0.05; transform: scale(0.98); }
-
-            45% { opacity: 1; text-shadow: 0 0 25px #FFD700; transform: scale(1); }
-            65% { opacity: 1; transform: translateY(0); }
-
+            0% { 
+                opacity: 0; 
+                transform: scale(0.98); 
+                letter-spacing: 0.35em;
+            }
+            15% { 
+                opacity: 1; 
+                text-shadow: 0 0 15px #FFD700; 
+                transform: scale(1); 
+            }
+            30% { 
+                opacity: 0.05; 
+                transform: scale(0.98); 
+            }
+            45% { 
+                opacity: 1; 
+                text-shadow: 0 0 25px #FFD700; 
+                transform: scale(1); 
+            }
+            65% { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
             100% { 
                 opacity: 0; 
                 transform: translateY(-300px); 
-                filter: blur(2px); 
+                filter: blur(4px);
+                letter-spacing: 0.7em; /* Expansion effect */
             }
         }
 
         @keyframes sharpAppearAndRise {
-            0%, 38% { opacity: 0; transform: translateY(10px); }
-            50% { opacity: 1; transform: translateY(0); }
-            65% { opacity: 1; transform: translateY(0); }
+            0%, 38% { 
+                opacity: 0; 
+                transform: translateY(10px); 
+            }
+            50% { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+            65% { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
             100% { 
                 opacity: 0; 
-                transform: translateY(-300px); 
+                transform: translateY(-350px); 
+                letter-spacing: 0.9em; /* Faster expansion for the subtext */
             }
         }
     </style>
