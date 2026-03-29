@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kinship Backup - March 26</title>
+    <title>Kinship - A Personal Ascent</title>
     <style>
-        /* 1. THE UNIVERSE - Deep space background */
         body, html {
             margin: 0;
             padding: 0;
@@ -15,23 +14,20 @@
             width: 100%;
         }
 
+        /* 1. BASE STARFIELD */
         .galaxy-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%);
             z-index: 1;
         }
 
-        /* 2. THE STARS - Procedural starfield using box-shadow */
         .galaxy-bg::after {
             content: "";
             position: absolute;
             top: 0; left: 0;
-            width: 1px;
-            height: 1px;
+            width: 1px; height: 1px;
             background: transparent;
             box-shadow: 
                 15vw 15vh 1px #fff, 35vw 45vh 2px #fff, 80vw 10vh 1px #fff,
@@ -48,27 +44,26 @@
             50% { opacity: 0.3; }
         }
 
-        /* 3. COLORFUL NEBULA - Appears after text fades */
+        /* 2. THE UNIVERSE REVEAL (Nebula) */
         .universe-nebula {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 2;
             opacity: 0;
-            /* Overlapping gradients to simulate a colorful galaxy */
+            /* Brighter, more vivid colors for a "Universe" feel */
             background: 
-                radial-gradient(circle at 20% 40%, rgba(49, 21, 102, 0.6), transparent 50%),
-                radial-gradient(circle at 80% 60%, rgba(14, 76, 117, 0.5), transparent 50%),
-                radial-gradient(circle at 50% 80%, rgba(102, 16, 47, 0.4), transparent 60%);
-            /* Fades in at 9 seconds (as text leaves) and takes 4 seconds to reach full opacity */
-            animation: revealUniverse 4s ease-in-out 9s forwards;
+                radial-gradient(circle at 20% 30%, rgba(70, 30, 180, 0.4), transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(0, 100, 150, 0.3), transparent 60%),
+                radial-gradient(circle at 50% 50%, rgba(150, 20, 80, 0.2), transparent 70%);
+            animation: revealUniverse 3s ease-out 6.5s forwards;
         }
 
         @keyframes revealUniverse {
             to { opacity: 1; }
         }
 
-        /* 4. THE STAGE - Centering the experience */
+        /* 3. THE TEXT STAGE */
         .kinship-stage {
             position: fixed;
             top: 0; left: 0;
@@ -78,21 +73,18 @@
             justify-content: center;
             align-items: center;
             z-index: 100;
-            pointer-events: none; /* Let clicks pass through until the button appears */
         }
 
-        /* 5. TEXT ANIMATIONS */
         .welcome-text {
             font-family: 'Georgia', serif;
             color: #ffffff;
             font-size: clamp(24px, 6vw, 42px); 
             text-transform: uppercase;
             letter-spacing: 0.35em;
-            white-space: nowrap;
-            margin: 0;
             opacity: 0;
-            position: absolute; /* Keep it centered while animating up */
-            animation: doubleBreathAndRise 9s ease-in-out forwards;
+            position: absolute;
+            /* Total duration reduced to 7s */
+            animation: doubleBreathAndRise 7s ease-in-out forwards;
         }
 
         .ascent-text {
@@ -102,61 +94,61 @@
             font-weight: 700; 
             text-transform: uppercase;
             letter-spacing: 0.5em;
-            margin-top: 80px; /* Offset below the welcome text */
+            margin-top: 80px;
             opacity: 0;
             position: absolute;
-            animation: sharpAppearAndRise 9s ease-in-out forwards;
+            animation: sharpAppearAndRise 7s ease-in-out forwards;
         }
 
         @keyframes doubleBreathAndRise {
-            0% { opacity: 0; transform: scale(0.98); letter-spacing: 0.35em; }
+            0% { opacity: 0; transform: scale(0.95); }
             15% { opacity: 1; text-shadow: 0 0 15px #FFD700; transform: scale(1); }
-            30% { opacity: 0.05; transform: scale(0.98); }
+            30% { opacity: 0.1; transform: scale(0.98); }
             45% { opacity: 1; text-shadow: 0 0 25px #FFD700; transform: scale(1); }
-            65% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-300px); filter: blur(4px); letter-spacing: 0.7em; }
+            70% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-250px); filter: blur(5px); letter-spacing: 0.6em; }
         }
 
         @keyframes sharpAppearAndRise {
-            0%, 38% { opacity: 0; transform: translateY(10px); }
-            50% { opacity: 1; transform: translateY(0); }
-            65% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-350px); letter-spacing: 0.9em; }
+            0%, 40% { opacity: 0; transform: translateY(10px); }
+            55% { opacity: 1; transform: translateY(0); }
+            70% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-300px); letter-spacing: 0.8em; }
         }
 
-        /* 6. ENTER BUTTON */
+        /* 4. THE ENTER BUTTON */
         .enter-btn-wrapper {
-            position: absolute;
             opacity: 0;
-            /* Button fades in at 11 seconds */
-            animation: revealButton 2s ease-in-out 11s forwards;
-            pointer-events: auto; /* Makes the button clickable */
+            z-index: 101;
+            /* Appears right as the nebula finishes revealing */
+            animation: revealButton 1.5s ease-out 8s forwards;
         }
 
         .enter-button {
-            background: transparent;
+            background: rgba(255, 255, 255, 0.05);
             color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 16px 48px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 18px 56px;
             font-family: 'Georgia', serif;
             font-size: 14px;
-            letter-spacing: 0.4em;
+            letter-spacing: 0.5em;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(4px);
+            transition: all 0.5s ease;
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
         }
 
         .enter-button:hover {
-            background: rgba(255, 215, 0, 0.1);
             border-color: #FFD700;
             color: #FFD700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255, 215, 0, 0.1);
-            letter-spacing: 0.5em; /* Expands slightly on hover */
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            background: rgba(255, 215, 0, 0.05);
+            transform: scale(1.05);
         }
 
         @keyframes revealButton {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
@@ -171,7 +163,7 @@
         <div class="ascent-text">A Personal Ascent</div>
         
         <div class="enter-btn-wrapper">
-            <button class="enter-button" onclick="window.location.href='#'">Enter</button>
+            <button class="enter-button" onclick="alert('Proceeding to Ascent...')">Enter</button>
         </div>
     </div>
 
