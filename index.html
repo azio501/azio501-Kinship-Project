@@ -14,64 +14,66 @@
             width: 100%;
         }
 
-        /* 1. THE DEEP STARFIELD */
-        .stars-container {
+        /* 1. VIVID MULTI-LAYERED UNIVERSE */
+        .universe-container {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 1;
-            background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%);
+            background: radial-gradient(circle at center, #0d0d2b 0%, #000000 100%);
         }
 
-        .stars-distant, .stars-near {
+        /* Enhanced Nebula - Brighter and more "Gassy" */
+        .nebula-gases {
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            opacity: 0;
+            background: 
+                radial-gradient(circle at 30% 35%, rgba(120, 50, 255, 0.6) 0%, transparent 45%),
+                radial-gradient(circle at 75% 65%, rgba(0, 180, 255, 0.5) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(255, 30, 150, 0.35) 0%, transparent 55%),
+                radial-gradient(circle at 20% 80%, rgba(50, 255, 200, 0.25) 0%, transparent 40%);
+            animation: revealUniverse 5s ease-out 5.5s forwards, drift 50s linear infinite;
+            filter: blur(40px); /* Softens the gas edges */
+        }
+
+        /* 2. THREE-LAYER STARFIELD */
+        .stars {
             position: absolute;
             top: 0; left: 0;
-            width: 1px; height: 1px;
-            background: transparent;
-        }
-
-        .stars-distant {
-            box-shadow: 10vw 10vh #fff, 25vw 40vh #fff, 45vw 15vh #fff, 85vw 25vh #fff, 15vw 85vh #fff, 60vw 60vh #fff, 95vw 90vh #fff, 40vw 80vh #fff;
-            animation: flicker 8s infinite alternate;
-        }
-
-        .stars-near {
             width: 2px; height: 2px;
-            box-shadow: 20vw 30vh #fff, 70vw 20vh #fff, 50vw 70vh #fff, 80vw 80vh #fff, 10vw 60vh #fff, 35vw 15vh #fff;
-            animation: flicker 3s infinite alternate-reverse;
-            filter: blur(0.5px);
+            background: transparent;
+            z-index: 2;
+        }
+
+        .stars.tiny {
+            box-shadow: 5vw 10vh #fff, 15vw 45vh #fff, 35vw 20vh #fff, 65vw 15vh #fff, 85vw 80vh #fff, 40vw 90vh #fff, 90vw 10vh #fff;
+            animation: flicker 6s infinite alternate;
+        }
+
+        .stars.mid {
+            width: 3px; height: 3px;
+            box-shadow: 20vw 25vh rgba(255,255,255,0.8), 75vw 35vh rgba(255,255,255,0.7), 50vw 75vh rgba(255,255,255,0.8), 10vw 85vh rgba(255,255,255,0.6);
+            animation: flicker 4s infinite alternate-reverse;
+            filter: blur(1px);
         }
 
         @keyframes flicker {
-            0% { opacity: 0.3; }
-            100% { opacity: 1; }
+            0% { opacity: 0.2; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1.1); }
         }
 
-        /* 2. VIBRANT NEBULA GASES */
-        .nebula-gases {
-            position: fixed;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            z-index: 2;
-            opacity: 0;
-            background: 
-                radial-gradient(circle at 30% 40%, rgba(80, 40, 180, 0.5) 0%, transparent 40%),
-                radial-gradient(circle at 70% 60%, rgba(0, 120, 200, 0.4) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(180, 20, 100, 0.3) 0%, transparent 50%);
-            /* Starts appearing EARLIER to prevent the "nothing happens" gap */
-            animation: revealGases 4s ease-out 5.5s forwards, drift 40s linear infinite;
-        }
-
-        @keyframes revealGases {
+        @keyframes revealUniverse {
             to { opacity: 1; }
         }
 
         @keyframes drift {
             from { transform: rotate(0deg); }
-            to { transform: rotate(10deg); }
+            to { transform: rotate(15deg); }
         }
 
-        /* 3. INTRO TEXT */
+        /* 3. TEXT ANIMATIONS (Simplified Timing) */
         .kinship-stage {
             position: fixed;
             top: 0; left: 0;
@@ -88,74 +90,105 @@
             text-transform: uppercase;
             position: absolute;
             opacity: 0;
-            pointer-events: none;
+            text-align: center;
         }
 
         .welcome-text {
             color: #ffffff;
-            font-size: clamp(24px, 6vw, 42px); 
-            letter-spacing: 0.35em;
-            animation: doubleBreathAndRise 7s ease-in-out forwards;
+            font-size: clamp(28px, 6vw, 48px); 
+            letter-spacing: 0.4em;
+            animation: riseFade 7s ease-in-out forwards;
         }
 
         .ascent-text {
             color: #FFD700; 
             font-size: clamp(16px, 2.5vw, 22px);
             font-weight: 700; 
-            letter-spacing: 0.5em;
-            margin-top: 80px;
-            animation: sharpAppearAndRise 7s ease-in-out forwards;
+            letter-spacing: 0.6em;
+            margin-top: 90px;
+            animation: riseFadeSub 7s ease-in-out forwards;
         }
 
-        @keyframes doubleBreathAndRise {
-            0% { opacity: 0; transform: scale(0.95); }
-            15% { opacity: 1; text-shadow: 0 0 15px #FFD700; transform: scale(1); }
-            30% { opacity: 0.1; transform: scale(0.98); }
-            45% { opacity: 1; text-shadow: 0 0 25px #FFD700; transform: scale(1); }
-            70% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-250px); filter: blur(8px); letter-spacing: 0.8em; }
+        @keyframes riseFade {
+            0% { opacity: 0; transform: scale(0.9); }
+            20% { opacity: 1; text-shadow: 0 0 20px #FFD700; }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-200px); filter: blur(10px); }
         }
 
-        @keyframes sharpAppearAndRise {
-            0%, 40% { opacity: 0; transform: translateY(10px); }
-            55% { opacity: 1; transform: translateY(0); }
-            70% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-300px); letter-spacing: 0.9em; }
+        @keyframes riseFadeSub {
+            0%, 40% { opacity: 0; }
+            55% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-250px); filter: blur(5px); }
         }
 
-        /* 4. SHINY PULSING GLASS BUTTON */
+        /* 4. GLOWING GLASS PILL BUTTON */
         .enter-btn-wrapper {
             opacity: 0;
             z-index: 101;
-            /* Appears at 7.5s, right as the text fully clears */
-            animation: revealButton 1.5s ease-out 7.5s forwards;
+            animation: revealButton 2s ease-out 7.5s forwards;
         }
 
         .enter-button {
-            position: relative;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 20px 60px;
+            padding: 22px 70px;
             font-family: 'Georgia', serif;
-            font-size: 14px;
-            letter-spacing: 0.6em;
+            font-size: 13px;
+            letter-spacing: 0.7em;
             text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.03);
+            
+            /* The "Softer" Edges */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 100px; /* Pill Shape */
+            
             cursor: pointer;
-            border-radius: 50px; /* Fully Rounded */
-            backdrop-filter: blur(15px);
-            overflow: hidden;
-            transition: all 0.4s ease;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-            animation: pulseGlow 3s infinite ease-in-out 9s; /* Pulse starts after appearing */
-            pointer-events: auto;
+            backdrop-filter: blur(25px); /* Strong glass effect */
+            -webkit-backdrop-filter: blur(25px);
+            
+            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
+                        inset 0 0 15px rgba(255, 255, 255, 0.05);
+            
+            animation: buttonGlow 4s infinite ease-in-out;
         }
 
-        /* The Shiny Reflection */
-        .enter-button::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -100%;
-            width: 50%; height: 200%;
-            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transform:
+        .enter-button:hover {
+            background: rgba(255, 215, 0, 0.08);
+            border-color: rgba(255, 215, 0, 0.5);
+            color: #FFD700;
+            letter-spacing: 0.9em;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.25);
+            transform: translateY(-2px);
+        }
+
+        @keyframes buttonGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.15); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.4); }
+        }
+
+        @keyframes revealButton {
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="universe-container">
+        <div class="nebula-gases"></div>
+        <div class="stars tiny"></div>
+        <div class="stars mid"></div>
+    </div>
+
+    <div class="kinship-stage">
+        <h1 class="welcome-text">Welcome to Kinship</h1>
+        <div class="ascent-text">A Personal Ascent</div>
+        
+        <div class="enter-btn-wrapper">
+            <button class="enter-button" onclick="alert('The Ascent Begins...')">Enter</button>
+        </div>
+    </div>
+
+</body>
+</html>
