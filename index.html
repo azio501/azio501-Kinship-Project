@@ -17,7 +17,7 @@
             align-items: center;
         }
 
-        /* 1. LAYERED UNIVERSE */
+        /* 1. THE UNIVERSE - ALWAYS VISIBLE */
         .galaxy-bg {
             position: fixed;
             top: 0; left: 0;
@@ -68,6 +68,7 @@
             margin: 0;
             position: relative;
             z-index: 10;
+            /* STARTS VISIBLE TO PREVENT BLANK SCREEN */
             animation: welcomeSequence 9s ease-in-out forwards;
         }
 
@@ -81,3 +82,78 @@
             position: absolute;
             width: 100%;
             left: 0;
+            top: 60px;
+            z-index: 999; /* FORCED FRONT */
+            opacity: 0;
+            /* HARDWARE ACCELERATION WITHOUT 3D GLITCHES */
+            transform: translateZ(0); 
+            animation: ascentSequence 9s ease-in-out forwards;
+        }
+
+        @keyframes welcomeSequence {
+            0% { opacity: 1; transform: scale(1); text-shadow: 0 0 15px #FFD700; }
+            25% { opacity: 0.3; text-shadow: none; }
+            45% { opacity: 1; text-shadow: 0 0 25px #FFD700; }
+            75% { opacity: 1; transform: translateY(0); filter: blur(0px); }
+            100% { opacity: 0; transform: translateY(-350px); filter: blur(15px); }
+        }
+
+        @keyframes ascentSequence {
+            0%, 45% { opacity: 0; transform: translateY(80px) scale(0.6); }
+            60% { opacity: 1; transform: translateY(15px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-600px) scale(3.5); }
+        }
+
+        /* 3. BUTTON */
+        .btn-container {
+            opacity: 0;
+            margin-top: 70px;
+            animation: fadeIn 1s ease-out 8.5s forwards;
+        }
+
+        .enter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            padding: 18px 75px;
+            color: #fff;
+            font-family: 'Georgia', serif;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            border-radius: 100px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="galaxy-bg" id="starfield">
+        <div class="nebula"></div>
+    </div>
+
+    <div class="stage">
+        <h1 class="welcome-text">Welcome to Kinship</h1>
+        <div class="ascent-text">A Personal Ascent</div>
+        <div class="btn-container">
+            <button class="enter-btn" onclick="location.reload()">Enter</button>
+        </div>
+    </div>
+
+    <script>
+        const starfield = document.getElementById('starfield');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = (Math.random() * 2 + 1) + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            starfield.appendChild(star);
+        }
+    </script>
+</body>
+</html>
