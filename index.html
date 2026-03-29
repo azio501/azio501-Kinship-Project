@@ -50,15 +50,15 @@
         @keyframes rotateNebula { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes twinkle { to { opacity: 1; transform: scale(1.4); } }
 
-        /* 2. THE STAGE - Depth Overhaul */
+        /* 2. THE STAGE - 3D LAYERED */
         .stage {
             position: relative;
             z-index: 100;
-            width: 100%;
-            height: 200px;
+            width: 100vw;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            perspective: 1000px; /* Adds real 3D depth */
         }
 
         .welcome-text {
@@ -71,40 +71,32 @@
             margin: 0;
             opacity: 0;
             position: relative;
-            z-index: 10; /* Lower than Ascent */
-            filter: blur(0px);
-            animation: welcomeSequence 9s ease-in-out forwards;
+            z-index: 10; /* Lower layer */
+            animation: welcomePulseRise 9s ease-in-out forwards;
         }
 
         .ascent-text {
             font-family: 'Georgia', serif;
             color: #FFD700;
-            font-size: clamp(14px, 2.5vw, 20px);
+            font-size: clamp(14px, 2.5vw, 22px);
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.6em;
             position: absolute;
             width: 100%;
             text-align: center;
-            left: 0;
-            top: 60%; /* Adjusted starting point */
-            z-index: 50; /* HIGHER LAYER - Ensures it's in front */
+            top: 60px;
             opacity: 0;
-            filter: blur(0px); /* Forces sharpness */
-            animation: ascentSequence 9s ease-in-out forwards;
+            /* Z-INDEX 999 FORCES IT IN FRONT OF EVERYTHING */
+            z-index: 999; 
+            filter: blur(0px);
+            animation: ascentFastRise 9s ease-in-out forwards;
         }
 
-        @keyframes welcomeSequence {
-            0% { opacity: 0; transform: scale(1); filter: blur(0px); }
-            15% { opacity: 1; filter: blur(0px); }
-            30% { opacity: 0.2; }
-            45% { opacity: 1; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+        @keyframes welcomePulseRise {
+            0% { opacity: 0; transform: scale(0.95); filter: blur(0px); }
+            15% { opacity: 1; text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700; transform: scale(1); }
+            30% { opacity: 0.15; text-shadow: none; }
+            45% { opacity: 1; text-shadow: 0 0 30px #FFD700, 0 0 60px rgba(255, 215, 0, 0.8); }
             75% { opacity: 1; transform: translateY(0); filter: blur(0px); }
-            100% { opacity: 0; transform: translateY(-300px); filter: blur(12px); }
-        }
-
-        @keyframes ascentSequence {
-            0%, 40% { opacity: 0; transform: translateY(80px) scale(0.7); filter: blur(0px); }
-            55% { opacity: 1; transform: translateY(20px) scale(1.1); filter: blur(0px); }
-            70% { opacity: 1; filter: blur(0px); }
-            100% { opacity
+            100% { opacity: 0; transform: translateY(-
