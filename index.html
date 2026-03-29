@@ -17,7 +17,7 @@
             align-items: center;
         }
 
-        /* 1. THE UNIVERSE (Forced Visibility) */
+        /* 1. THE UNIVERSE - INSTANTLY VISIBLE */
         .galaxy-bg {
             position: fixed;
             top: 0; left: 0;
@@ -30,15 +30,14 @@
             position: absolute;
             background: #fff;
             border-radius: 50%;
-            opacity: 0.6;
-            animation: twinkle 3s infinite alternate;
+            opacity: 0.8; /* High visibility */
         }
 
         .nebula {
             position: absolute;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            opacity: 0.4;
+            opacity: 0.5; /* Visible immediately */
             background: 
                 radial-gradient(circle at 20% 30%, rgba(100, 50, 255, 0.4), transparent 40%),
                 radial-gradient(circle at 80% 70%, rgba(0, 150, 255, 0.3), transparent 45%),
@@ -48,13 +47,12 @@
         }
 
         @keyframes rotateNebula { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes twinkle { to { opacity: 1; transform: scale(1.4); } }
 
-        /* 2. THE STAGE (Layered Depth) */
+        /* 2. THE STAGE - NO WRAP & DEPTH */
         .stage {
             position: relative;
             z-index: 100;
-            width: 100vw;
+            text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -68,10 +66,10 @@
             letter-spacing: 0.4em;
             white-space: nowrap; /* FORCES ONE LINE */
             margin: 0;
-            opacity: 0;
             position: relative;
-            z-index: 10; /* Lower Layer */
-            animation: welcomePulseRise 9s ease-in-out forwards;
+            z-index: 10;
+            /* STARTS VISIBLE TO PREVENT BLANK SCREEN */
+            animation: welcomeSequence 9s ease-in-out forwards;
         }
 
         .ascent-text {
@@ -83,23 +81,22 @@
             letter-spacing: 0.6em;
             position: absolute;
             width: 100%;
-            text-align: center;
+            left: 0;
             top: 60px;
-            opacity: 0;
             z-index: 999; /* STAYS IN FRONT */
-            animation: ascentFastRise 9s ease-in-out forwards;
+            opacity: 0;
+            animation: ascentSequence 9s ease-in-out forwards;
         }
 
-        @keyframes welcomePulseRise {
-            0% { opacity: 0; transform: scale(1); }
-            15% { opacity: 1; text-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700; }
-            30% { opacity: 0.2; text-shadow: none; }
-            45% { opacity: 1; text-shadow: 0 0 30px #FFD700, 0 0 50px rgba(255, 215, 0, 0.8); }
+        @keyframes welcomeSequence {
+            0% { opacity: 1; transform: scale(1); text-shadow: 0 0 20px #FFD700; }
+            20% { opacity: 0.2; text-shadow: none; }
+            40% { opacity: 1; text-shadow: 0 0 30px #FFD700, 0 0 50px rgba(255, 215, 0, 0.8); }
             75% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-350px); filter: blur(15px); }
         }
 
-        @keyframes ascentFastRise {
+        @keyframes ascentSequence {
             0%, 42% { opacity: 0; transform: translateY(100px) scale(0.6); }
             58% { opacity: 1; transform: translateY(20px) scale(1.1); }
             100% { opacity: 0; transform: translateY(-600px) scale(3); filter: blur(5px); }
@@ -109,14 +106,13 @@
         .btn-container {
             opacity: 0;
             margin-top: 60px;
-            z-index: 1000;
-            animation: fadeIn 2s ease-out 8.5s forwards;
+            animation: fadeIn 1s ease-out 8.5s forwards;
         }
 
         .enter-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 215, 0, 0.4);
-            padding: 20px 80px;
+            padding: 18px 70px;
             color: #fff;
             font-family: 'Georgia', serif;
             letter-spacing: 0.5em;
@@ -125,13 +121,6 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-            transition: 0.4s;
-        }
-        
-        .enter-btn:hover {
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
-            transform: scale(1.05);
-            background: rgba(255, 215, 0, 0.1);
         }
 
         @keyframes fadeIn { to { opacity: 1; } }
@@ -146,7 +135,6 @@
     <div class="stage">
         <h1 class="welcome-text">Welcome to Kinship</h1>
         <div class="ascent-text">A Personal Ascent</div>
-        
         <div class="btn-container">
             <button class="enter-btn" onclick="location.reload()">Enter</button>
         </div>
@@ -154,7 +142,10 @@
 
     <script>
         const starfield = document.getElementById('starfield');
-        for (let i = 0; i < 80; i++) {
+        for (let i = 0; i < 60; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            const size = Math.random() * 3 + 'px
+            star.style.width = Math.random() * 3 + 'px';
+            star.style.height = star.style.width;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 +
