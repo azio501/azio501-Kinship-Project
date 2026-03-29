@@ -5,188 +5,178 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kinship - A Personal Ascent</title>
     <style>
+        /* 1. THE FOUNDATION */
         body, html {
             margin: 0;
             padding: 0;
             background: #000000;
+            color: #ffffff;
+            font-family: 'Georgia', serif;
             overflow: hidden;
             height: 100%;
             width: 100%;
         }
 
-        /* 1. VIVID MULTI-LAYERED UNIVERSE */
-        .universe-container {
+        /* 2. THE UNIVERSE (Visible immediately) */
+        .universe-bg {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 1;
-            background: radial-gradient(circle at center, #0d0d2b 0%, #000000 100%);
+            /* Base faint glow so it's never a "blank" black screen */
+            background: radial-gradient(circle at center, #0a0a1f 0%, #000000 100%);
         }
 
-        /* Enhanced Nebula - Brighter and more "Gassy" */
-        .nebula-gases {
+        .nebula {
             position: absolute;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            opacity: 0;
+            /* Subtle base opacity, then brightens */
+            opacity: 0.2; 
             background: 
-                radial-gradient(circle at 30% 35%, rgba(120, 50, 255, 0.6) 0%, transparent 45%),
-                radial-gradient(circle at 75% 65%, rgba(0, 180, 255, 0.5) 0%, transparent 45%),
-                radial-gradient(circle at 50% 50%, rgba(255, 30, 150, 0.35) 0%, transparent 55%),
-                radial-gradient(circle at 20% 80%, rgba(50, 255, 200, 0.25) 0%, transparent 40%);
-            animation: revealUniverse 5s ease-out 5.5s forwards, drift 50s linear infinite;
-            filter: blur(40px); /* Softens the gas edges */
+                radial-gradient(circle at 30% 30%, rgba(100, 50, 255, 0.4), transparent 40%),
+                radial-gradient(circle at 70% 70%, rgba(0, 150, 255, 0.3), transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(200, 20, 100, 0.2), transparent 50%);
+            filter: blur(50px);
+            animation: brightenUniverse 8s ease-in-out forwards, rotateNebula 60s linear infinite;
         }
 
-        /* 2. THREE-LAYER STARFIELD */
-        .stars {
-            position: absolute;
-            top: 0; left: 0;
-            width: 2px; height: 2px;
-            background: transparent;
-            z-index: 2;
-        }
-
-        .stars.tiny {
-            box-shadow: 5vw 10vh #fff, 15vw 45vh #fff, 35vw 20vh #fff, 65vw 15vh #fff, 85vw 80vh #fff, 40vw 90vh #fff, 90vw 10vh #fff;
-            animation: flicker 6s infinite alternate;
-        }
-
-        .stars.mid {
-            width: 3px; height: 3px;
-            box-shadow: 20vw 25vh rgba(255,255,255,0.8), 75vw 35vh rgba(255,255,255,0.7), 50vw 75vh rgba(255,255,255,0.8), 10vw 85vh rgba(255,255,255,0.6);
-            animation: flicker 4s infinite alternate-reverse;
-            filter: blur(1px);
-        }
-
-        @keyframes flicker {
-            0% { opacity: 0.2; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1.1); }
-        }
-
-        @keyframes revealUniverse {
+        @keyframes brightenUniverse {
             to { opacity: 1; }
         }
 
-        @keyframes drift {
+        @keyframes rotateNebula {
             from { transform: rotate(0deg); }
-            to { transform: rotate(15deg); }
+            to { transform: rotate(10deg); }
         }
 
-        /* 3. TEXT ANIMATIONS (Simplified Timing) */
-        .kinship-stage {
-            position: fixed;
+        /* 3. THE STARS (Using a more reliable render method) */
+        .star-layer {
+            position: absolute;
             top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            width: 100%; height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle 4s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            to { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* 4. THE TEXT EXPERIENCE */
+        .stage {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 100;
-        }
-
-        .welcome-text, .ascent-text {
-            font-family: 'Georgia', serif;
-            text-transform: uppercase;
-            position: absolute;
-            opacity: 0;
             text-align: center;
         }
 
         .welcome-text {
-            color: #ffffff;
-            font-size: clamp(28px, 6vw, 48px); 
-            letter-spacing: 0.4em;
-            animation: riseFade 7s ease-in-out forwards;
+            font-size: clamp(24px, 8vw, 48px);
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            margin: 0;
+            opacity: 0;
+            animation: textFlow 7s ease-in-out forwards;
         }
 
         .ascent-text {
-            color: #FFD700; 
-            font-size: clamp(16px, 2.5vw, 22px);
-            font-weight: 700; 
-            letter-spacing: 0.6em;
-            margin-top: 90px;
-            animation: riseFadeSub 7s ease-in-out forwards;
-        }
-
-        @keyframes riseFade {
-            0% { opacity: 0; transform: scale(0.9); }
-            20% { opacity: 1; text-shadow: 0 0 20px #FFD700; }
-            50% { opacity: 1; }
-            100% { opacity: 0; transform: translateY(-200px); filter: blur(10px); }
-        }
-
-        @keyframes riseFadeSub {
-            0%, 40% { opacity: 0; }
-            55% { opacity: 1; }
-            100% { opacity: 0; transform: translateY(-250px); filter: blur(5px); }
-        }
-
-        /* 4. GLOWING GLASS PILL BUTTON */
-        .enter-btn-wrapper {
-            opacity: 0;
-            z-index: 101;
-            animation: revealButton 2s ease-out 7.5s forwards;
-        }
-
-        .enter-button {
-            padding: 22px 70px;
-            font-family: 'Georgia', serif;
-            font-size: 13px;
-            letter-spacing: 0.7em;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.03);
-            
-            /* The "Softer" Edges */
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 100px; /* Pill Shape */
-            
-            cursor: pointer;
-            backdrop-filter: blur(25px); /* Strong glass effect */
-            -webkit-backdrop-filter: blur(25px);
-            
-            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 
-                        inset 0 0 15px rgba(255, 255, 255, 0.05);
-            
-            animation: buttonGlow 4s infinite ease-in-out;
-        }
-
-        .enter-button:hover {
-            background: rgba(255, 215, 0, 0.08);
-            border-color: rgba(255, 215, 0, 0.5);
             color: #FFD700;
-            letter-spacing: 0.9em;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.25);
-            transform: translateY(-2px);
+            font-size: clamp(14px, 3vw, 20px);
+            text-transform: uppercase;
+            letter-spacing: 0.8em;
+            margin-top: 20px;
+            opacity: 0;
+            animation: textFlowSub 7s ease-in-out forwards;
         }
 
-        @keyframes buttonGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.15); }
-            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.4); }
+        @keyframes textFlow {
+            0% { opacity: 0; transform: scale(0.9); filter: blur(10px); }
+            20% { opacity: 1; filter: blur(0px); }
+            80% { opacity: 1; transform: scale(1); filter: blur(0px); }
+            100% { opacity: 0; transform: translateY(-150px) scale(1.1); filter: blur(15px); }
         }
 
-        @keyframes revealButton {
-            from { opacity: 0; transform: scale(0.9) translateY(30px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+        @keyframes textFlowSub {
+            0%, 30% { opacity: 0; }
+            50% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-180px); filter: blur(10px); }
+        }
+
+        /* 5. THE SOFT GLOW BUTTON (Pill-shaped & Glassy) */
+        .btn-container {
+            opacity: 0;
+            margin-top: 40px;
+            animation: showBtn 2s ease-out 6.5s forwards;
+        }
+
+        .enter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px 60px;
+            color: #ffffff;
+            font-size: 14px;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            border-radius: 100px; /* Rounded pill shape */
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            transition: all 0.5s ease;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
+            animation: buttonPulse 4s infinite ease-in-out;
+        }
+
+        .enter-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: #FFD700;
+            color: #FFD700;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            letter-spacing: 0.7em;
+            transform: scale(1.05);
+        }
+
+        @keyframes showBtn {
+            to { opacity: 1; }
+        }
+
+        @keyframes buttonPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.05); }
+            50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.2); }
         }
     </style>
 </head>
 <body>
 
-    <div class="universe-container">
-        <div class="nebula-gases"></div>
-        <div class="stars tiny"></div>
-        <div class="stars mid"></div>
+    <div class="universe-bg">
+        <div class="nebula"></div>
+        <div class="star-layer">
+            <div class="star" style="top: 10%; left: 20%; width: 2px; height: 2px;"></div>
+            <div class="star" style="top: 30%; left: 80%; width: 1px; height: 1px; animation-delay: 1s;"></div>
+            <div class="star" style="top: 70%; left: 10%; width: 3px; height: 3px; animation-delay: 2s;"></div>
+            <div class="star" style="top: 85%; left: 60%; width: 1px; height: 1px; animation-delay: 0.5s;"></div>
+            <div class="star" style="top: 15%; left: 50%; width: 2px; height: 2px; animation-delay: 3s;"></div>
+            <div class="star" style="top: 50%; left: 90%; width: 1px; height: 1px; animation-delay: 1.5s;"></div>
+        </div>
     </div>
 
-    <div class="kinship-stage">
+    <div class="stage">
         <h1 class="welcome-text">Welcome to Kinship</h1>
-        <div class="ascent-text">A Personal Ascent</div>
+        <p class="ascent-text">A Personal Ascent</p>
         
-        <div class="enter-btn-wrapper">
-            <button class="enter-button" onclick="alert('The Ascent Begins...')">Enter</button>
+        <div class="btn-container">
+            <button class="enter-btn" onclick="location.reload()">Enter</button>
         </div>
     </div>
 
