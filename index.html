@@ -17,7 +17,7 @@
             align-items: center;
         }
 
-        /* 1. THE DEEP UNIVERSE */
+        /* 1. THE UNIVERSE */
         .galaxy-bg {
             position: fixed;
             top: 0; left: 0;
@@ -50,14 +50,14 @@
         @keyframes rotateNebula { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes twinkle { to { opacity: 1; transform: scale(1.4); } }
 
-        /* 2. THE STAGE */
+        /* 2. THE STAGE - Depth Overhaul */
         .stage {
             position: relative;
             z-index: 100;
-            text-align: center;
             width: 100%;
+            height: 200px;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
         }
 
@@ -70,7 +70,9 @@
             white-space: nowrap; 
             margin: 0;
             opacity: 0;
-            filter: blur(0px); /* Explicitly sharp start */
+            position: relative;
+            z-index: 10; /* Lower than Ascent */
+            filter: blur(0px);
             animation: welcomeSequence 9s ease-in-out forwards;
         }
 
@@ -83,87 +85,26 @@
             letter-spacing: 0.6em;
             position: absolute;
             width: 100%;
+            text-align: center;
             left: 0;
-            top: 55px;
-            z-index: 110; /* Fly in front */
+            top: 60%; /* Adjusted starting point */
+            z-index: 50; /* HIGHER LAYER - Ensures it's in front */
             opacity: 0;
+            filter: blur(0px); /* Forces sharpness */
             animation: ascentSequence 9s ease-in-out forwards;
         }
 
         @keyframes welcomeSequence {
             0% { opacity: 0; transform: scale(1); filter: blur(0px); }
             15% { opacity: 1; filter: blur(0px); }
-            30% { opacity: 0.15; }
-            45% { opacity: 1; text-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+            30% { opacity: 0.2; }
+            45% { opacity: 1; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
             75% { opacity: 1; transform: translateY(0); filter: blur(0px); }
-            100% { opacity: 0; transform: translateY(-350px); filter: blur(15px); }
+            100% { opacity: 0; transform: translateY(-300px); filter: blur(12px); }
         }
 
         @keyframes ascentSequence {
-            0%, 40% { opacity: 0; transform: translateY(60px) scale(0.7); }
-            60% { opacity: 1; transform: translateY(15px) scale(1.1); }
-            100% { opacity: 0; transform: translateY(-550px) scale(2.2); filter: blur(4px); }
-        }
-
-        /* 3. BUTTON */
-        .btn-container {
-            opacity: 0;
-            margin-top: 50px;
-            animation: fadeIn 2s ease-out 8s forwards;
-        }
-
-        .enter-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            padding: 20px 80px;
-            color: #fff;
-            font-family: 'Georgia', serif;
-            letter-spacing: 0.5em;
-            text-transform: uppercase;
-            border-radius: 100px;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-            transition: 0.4s;
-        }
-        
-        .enter-btn:hover {
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
-            transform: scale(1.05);
-        }
-
-        @keyframes fadeIn { to { opacity: 1; } }
-    </style>
-</head>
-<body>
-
-    <div class="galaxy-bg" id="starfield">
-        <div class="nebula"></div>
-    </div>
-
-    <div class="stage">
-        <h1 class="welcome-text">Welcome to Kinship</h1>
-        <div class="ascent-text">A Personal Ascent</div>
-        
-        <div class="btn-container">
-            <button class="enter-btn" onclick="location.reload()">Enter</button>
-        </div>
-    </div>
-
-    <script>
-        // Generating more stars automatically so the code stays clean
-        const starfield = document.getElementById('starfield');
-        for (let i = 0; i < 40; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            const size = Math.random() * 3 + 'px';
-            star.style.width = size;
-            star.style.height = size;
-            star.style.top = Math.random() * 100 + '%';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.animationDelay = Math.random() * 5 + 's';
-            starfield.appendChild(star);
-        }
-    </script>
-</body>
-</html>
+            0%, 40% { opacity: 0; transform: translateY(80px) scale(0.7); filter: blur(0px); }
+            55% { opacity: 1; transform: translateY(20px) scale(1.1); filter: blur(0px); }
+            70% { opacity: 1; filter: blur(0px); }
+            100% { opacity
