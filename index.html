@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kinship - A Personal Ascent</title>
     <style>
-        /* 1. THE UNIVERSE - Deep & Brighter */
+        /* 1. THE UNIVERSE - Deep, Bright, & Moving */
         body, html {
             margin: 0;
             padding: 0;
@@ -19,7 +19,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #0a0a2a 0%, #000000 100%);
+            background: radial-gradient(circle at center, #0d0d2b 0%, #000000 100%);
             z-index: 1;
         }
 
@@ -27,13 +27,13 @@
             position: absolute;
             top: -50%; left: -50%;
             width: 200%; height: 200%;
-            opacity: 0.5;
+            opacity: 0.6; /* Higher opacity for immediate universe visibility */
             background: 
-                radial-gradient(circle at 30% 30%, rgba(80, 40, 180, 0.6), transparent 40%),
-                radial-gradient(circle at 70% 70%, rgba(0, 150, 255, 0.5), transparent 45%),
-                radial-gradient(circle at 50% 50%, rgba(200, 20, 120, 0.4), transparent 50%);
-            filter: blur(60px);
-            animation: rotateNebula 100s linear infinite;
+                radial-gradient(circle at 30% 30%, rgba(100, 60, 255, 0.6), transparent 45%),
+                radial-gradient(circle at 70% 70%, rgba(0, 180, 255, 0.5), transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(255, 20, 150, 0.4), transparent 55%);
+            filter: blur(50px);
+            animation: rotateNebula 120s linear infinite;
         }
 
         @keyframes rotateNebula {
@@ -41,7 +41,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 2. THE STAGE - Fixed Stacking */
+        /* 2. THE STAGE - Fixed Stacking and No-Wrap */
         .kinship-stage {
             position: fixed;
             top: 0; left: 0;
@@ -52,6 +52,7 @@
             align-items: center;
             z-index: 100;
             pointer-events: none;
+            text-align: center;
         }
 
         .welcome-text {
@@ -61,20 +62,23 @@
             text-transform: uppercase;
             letter-spacing: 0.35em;
             margin: 0;
+            padding: 0;
             opacity: 0;
-            /* Original Pulse & Rise */
+            white-space: nowrap; /* FORCES ONE LINE */
+            display: block;
             animation: doubleBreathAndRise 9s ease-in-out forwards;
         }
 
         .ascent-text {
             font-family: 'Georgia', serif;
             color: #FFD700; 
-            font-size: clamp(16px, 2.5vw, 22px);
+            font-size: clamp(14px, 2.5vw, 20px);
             font-weight: 700; 
             text-transform: uppercase;
             letter-spacing: 0.5em;
-            margin-top: 25px; /* Keeps it below the main text */
+            margin-top: 30px; 
             opacity: 0;
+            display: block;
             animation: sharpAppearAndRise 9s ease-in-out forwards;
         }
 
@@ -84,7 +88,7 @@
             30% { opacity: 0.05; transform: scale(0.98); }
             45% { opacity: 1; text-shadow: 0 0 25px #FFD700; transform: scale(1); }
             65% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-300px); filter: blur(4px); }
+            100% { opacity: 0; transform: translateY(-300px); filter: blur(5px); }
         }
 
         @keyframes sharpAppearAndRise {
@@ -97,48 +101,37 @@
         /* 3. SOFT GLOW PILL BUTTON */
         .btn-container {
             opacity: 0;
-            margin-top: 50px;
+            margin-top: 60px;
             pointer-events: auto;
             animation: revealButton 2s ease-out 8s forwards;
         }
 
         .enter-button {
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            padding: 20px 70px;
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            padding: 22px 80px;
             color: #ffffff;
             font-family: 'Georgia', serif;
             font-size: 14px;
-            letter-spacing: 0.5em;
+            letter-spacing: 0.6em;
             text-transform: uppercase;
-            border-radius: 100px; /* Softer Pill Shape */
+            border-radius: 100px; /* Perfectly Soft Edges */
             cursor: pointer;
-            backdrop-filter: blur(20px);
-            transition: all 0.5s ease;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
         }
 
         .enter-button:hover {
             border-color: #FFD700;
             color: #FFD700;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
             transform: scale(1.05);
+            background: rgba(255, 215, 0, 0.05);
         }
 
         @keyframes revealButton {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-    </style>
-</head>
-<body>
-
-    <div class="galaxy-bg">
-        <div class="nebula"></div>
-    </div>
-
-    <div class="kinship-stage">
-        <h1 class="welcome-text">Welcome to Kinship</h1>
-        <div class="ascent-text">A Personal Ascent</div>
-        
-        <div class
